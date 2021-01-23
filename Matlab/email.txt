@@ -1,0 +1,22 @@
+
+Dear Professor Levine,
+
+I have found many new open-source Matlab and Python programs for denoising that utilize new techinques and which are hopefully capable of processing our images at their full resolution. These programs are similar to anisotropic diffusion filtering, but they seem to differ enough that I have been unsuccesful at modifying the code for the smoothing algorithm to utilize the techniques that they do. I was having trouble modifying the current code (smoothing.h) to take a stack of downsized images as parallel channels, and have been having similar problems with other programs. Do you have any suggestions for best ways of handling the multiple-image stacks? 
+
+To the best of my understanding, the denoising algorithms that are most widely studied and used today all group image fragments into 3-Dimensional blocks based on certain local and non-local similarities. These blocks are considered as 3D stacks, that are then filtered similarly to how our images are filtered, so that noise is reduced yet features are generally preserved. The most common name that I have found for this technique is Block-matching-3D or 'BM3D'. I occupied myself with trying to understand some of these algorithms and tried to process some of our image sets using open source BM3D and TID programs, and was only able to denoise a single image at a time. 
+
+Many of the most recent publications and improvements involve convolutional neural networks. To my understanding, any denoising algorithm we use must be blind: able to denoise a stack of images without reference to an external database or control image. Is this correct? I have not tried to use these programs for this reason, but I did try to understand three different ones to see if I could isolate their filtering techniques, and was unsuccesful in each case. Do you think it is worth trying to utilize any techniques from these programs?
+
+Finally, as of 2018 (introduced in R2018a), Matlab is preloaded with a '3-D Edge-Aware Noise Reduction' functionality which I have started to try to utilize for our database. I am going to try to run this method against our prior method and the MB3D programs I have, but I am not sure how to quantify the differences between the different results once I have them. I am very busy with final projects, but am planning to work on implementation of this function before I look into how it works or how we might improve it. Do you foresee any problems with using this kind of method for denoising our images? Below is an example of the simple Matlab function with some elaboration on the built-in parameters of the operation. 
+
+
+Diffused_Images = imdiffusefilt(NoisyImages, 'NumberOfIterations',5, 'Connectivity', minmal, 'ConductionMethod', quadratic, '',,)
+
+
+The Connectivity of a pixel to its neighbors is set to be 26 nearest neigbhors for 3D images when the argument is maximal and 6 nearest neighbors for 3D images when the argument is minimal.
+
+The Conduction method is either Exponential, which favors high-contrast edges over low-contrast edges or Quadratic, which favors wide regions over smaller regions.
+
+The Gradient threshold is a numeric scalar or a numeric vector of length NumberOfIterations. The value of GradientThreshold controls the conduction process by classifying gradient values as an actual edge or as noise. Increasing the value of GradientThreshold smooths the image more. The default value is 10% of the dynamic range of the image. You can use the imdiffuseest function to estimate a suitable value of GradientThreshold.
+
+Best, Liam H.
