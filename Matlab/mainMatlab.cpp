@@ -3,7 +3,8 @@
 //Also Error in declaration of MexFunction
 
 #include <stdio.h>
-#include "smoothing.h"
+#include <iostream>
+#include "Smoothing.h"
 #include "Morphology.h"
 #include "thresholdParameters.h"
 #include "interpolation.h"
@@ -30,9 +31,11 @@ double *normalizeRepresentationIn(double *x, int width, int height){
 
 double *normalizeRepresentationOut(double *x, int width, int height){
   double *out = new double[width*height];
-  for(int i=0; i<width; i++)
-    for(int j=0; j<height; j++)
+  for(int i=0; i<width; i++) {
+    for(int j=0; j<height; j++) {
       out[i*height+j] = x[j*width+i];
+    }
+  }
   return out;
 }
 
@@ -68,48 +71,64 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]){
   int height = mxGetM(prhs[0]);  
   int numImages = nrhs;
   vector<double *> imageSet;
+//  double scale = 0.5;
   double scale = 700/sqrt((double)width*height);
+  printf("Scale: %f \t Width: %d \t Height: %d\n", scale, int(scale*width), int(scale*height));
   for(int i=0; i<numImages; i++){
     double *in = normalizeRepresentationIn(mxGetPr(prhs[i]), width, height);
     imageSet.push_back(resize(in, width, height, scale));
     delete[] in;
   }
+
   int iterations = 5;
   width = roundd(width*scale);
   height = roundd(height*scale);
+  printf("Beginning to smooth...\n");
   NonlinearIso *ni = new NonlinearIso();
   double *edges = ni->nonlinearIso(imageSet, 10, iterations, width, height);
   delete ni;
+  printf("Threshold Parameters...\n");
   thresholdParameters *tps = new thresholdParameters(edges, width, height);
   double *tmp = new double[width*height];
   for(int i=0; i<width*height; i++)
     tmp[i] = 1-edges[i];
   delete[] edges;
-   Morphology *m = new Morphology();
+  Morphology *m = new Morphology();
   double *thresholdedImage = m->doubleThreshold(tmp, tps->lowThreshold(), tps->highThreshold(), width, height);
   delete tps;
   delete[] tmp;
+
+  printf("Denoising Image...\n");
   int firstDenoiseThresh = roundd(width*height/5000);
+  printf("Binary Denoising Image...\n");
   double *denoisedImage = m->binaryDenoise(thresholdedImage, width, height, firstDenoiseThresh, 2);
   delete[] thresholdedImage;
+  printf("Dilating Image...\n");
   double *dilatedImage = m->dilate(denoisedImage, width, height);
   delete[] denoisedImage;
+  printf("Thinning Image...\n");
   double *thinnedImage = m->thin(dilatedImage, width, height);
   delete[] dilatedImage;
+  printf("Detangling Image...\n");
   double *detangledImage = m->detangle(m->detangle(thinnedImage, width, height), width, height);
   delete[] thinnedImage;
+
   Interpolation *interp = new Interpolation();
+  printf("Interpolating Image...\n");
   double *interpolatedImage = interp->interpolate(detangledImage, width, height);
   delete[] detangledImage;
   int pruneThreshold = roundd(sqrt((double)(width*height))/50.0);
+  printf("Pruning Image...\n");
   double *prunedImage = m->prune(interpolatedImage, pruneThreshold, width, height);
   delete[] interpolatedImage;
   int finalDenoiseThresh = roundd(sqrt((double)width*height)/50.0);
-  
+  printf("Skeletonizing Image...\n");
   double *skeleton = prunedImage;
   for(int i=0; i<3; i++)
+    printf("Skeletonizing Image...Pass %d\n", i);
     skeleton = m->prune(m->detangle(interp->interpolate(m->binaryDenoise(skeleton, width, height, finalDenoiseThresh, 2), width, height), width, height), pruneThreshold, width, height);
   delete[] prunedImage;
+  printf("Normalizing Image...\n");
   double *outImage = normalizeRepresentationOut(skeleton, width, height);
   delete[] skeleton;
   delete interp;
@@ -118,8 +137,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]){
   plhs[0] = mxCreateDoubleMatrix(height, width, mxREAL);
   double *out = mxGetPr(plhs[0]);
 
-
   for(int i=0; i<width*height; i++)
+//    out[i] = denoisedImage[i];
     out[i] = outImage[i];
-				      
 }

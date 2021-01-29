@@ -11,6 +11,8 @@ class Ray {
       return 3;
     if(x == 1 && y == -1)
       return 4;
+    else
+      return 0;
   }
 
  public:

@@ -1,0 +1,293 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=mex 2019.5.8)  23 JAN 2021 01:56
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**mainMatlab.cpp
+(./mainMatlab.cpp
+This is MeX  Version 1.05  18 XII 1993  (B. Jackowski & M. Ry\'cko)
+! You can't use `macro parameter character #' in vertical mode.
+l.5 #
+     include <stdio.h>
+? 
+! You can't use `macro parameter character #' in horizontal mode.
+l.6 #
+     include "smoothing.h"
+? 
+! You can't use `macro parameter character #' in horizontal mode.
+l.7 #
+     include "Morphology.h"
+? 
+! You can't use `macro parameter character #' in horizontal mode.
+l.8 #
+     include "thresholdParameters.h"
+? 
+! You can't use `macro parameter character #' in horizontal mode.
+l.9 #
+     include "interpolation.h"
+? q
+OK, entering \batchmode...
+! You can't use `macro parameter character #' in horizontal mode.
+l.10 #
+      include "mex.h"
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.11 #
+      include <vector>
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+
+Overfull \hbox (21.3293pt too wide) in paragraph at lines 21--30
+[]\tenrm double *nor-ma-li-ze-Re-pre-sen-ta-tio-nIn(double *x, int width, int h
+e-ight) do-uble *out = new do-uble[width*height];|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm d
+.\tenrm o
+.\tenrm u
+.\tenrm b
+.etc.
+
+
+Overfull \hbox (29.38489pt too wide) in paragraph at lines 31--38
+[]\tenrm double *nor-ma-li-ze-Re-pre-sen-ta-tio-nOut(double *x, int width, int 
+he-ight) do-uble *out = new do-uble[width*height];|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm d
+.\tenrm o
+.\tenrm u
+.\tenrm b
+.etc.
+
+
+Overfull \hbox (14.35703pt too wide) in paragraph at lines 39--63
+[]\tenrm double *re-size(double *image, int width, int he-ight, do-uble scale) 
+int width1 = ro-undd((double)width*scale);|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm d
+.\tenrm o
+.\tenrm u
+.\tenrm b
+.etc.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.74     imageSet.push_
+                       back(resize(in, width, height, scale));
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Extra }, or forgotten $.
+l.76   }
+        
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.108 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (86.81555pt too wide) in paragraph at lines 64--108
+\tenrm int he-ight = mxGetM(prhs[0]); int nu-mI-ma-ges = nrhs; vec-tor<double *
+> ima-ge-Set; do-uble scale = 700/sqrt((double)width*height);|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\tenrm i
+.\tenrm n
+.\kern-0.27779
+.\tenrm t
+.\glue 3.33333 plus 1.66666 minus 1.11111
+.etc.
+
+
+Overfull \hbox (185.1131pt too wide) in paragraph at lines 64--108
+\teni nonlinearIso\tenrm (\teni imageSet; \tenrm 10\teni ; iterations; width; h
+eight\tenrm ); \teni deleteni\tenrm ; \teni thresholdParameters \tensy ^^C \ten
+i tps \tenrm = \teni newthresholdParameters\tenrm (\teni edges; width; height\t
+enrm ); \teni double \tensy ^^C|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\teni n
+.\teni o
+.\teni n
+.\teni l
+.\kern0.19678
+.etc.
+
+
+Overfull \hbox (47.61206pt too wide) in paragraph at lines 64--108
+\teni tmp \tenrm = \teni newdouble\tenrm [\teni width \tensy ^^C \teni height\t
+enrm ]; \teni for\tenrm (\teni inti \tenrm = 0; \teni i < width \tensy ^^C \ten
+i height\tenrm ; \teni i \tenrm + +)\teni tmp\tenrm [\teni i\tenrm ] = 1 \tensy
+ ^^@ \teni edges\tenrm [\teni i\tenrm ]; \teni delete\tenrm []\teni edges\tenrm
+ ; \teni Morphology \tensy ^^C|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\teni t
+.\teni m
+.\teni p
+.\glue(\thickmuskip) 2.77771 plus 2.77771
+.\tenrm =
+.etc.
+
+
+Overfull \hbox (34.36223pt too wide) in paragraph at lines 64--108
+\teni m \tenrm = \teni newMorphology\tenrm (); \teni double \tensy ^^C \teni th
+resholdedImage \tenrm = \teni m\tensy ^^@ \teni > doubleThreshold\tenrm (\teni 
+tmp; tps\tensy ^^@ \teni > lowThreshold\tenrm ()\teni ; tps\tensy ^^@ \teni >|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\teni m
+.\glue(\thickmuskip) 2.77771 plus 2.77771
+.\tenrm =
+.\penalty 500
+.\glue(\thickmuskip) 2.77771 plus 2.77771
+.etc.
+
+
+Overfull \hbox (51.75949pt too wide) in paragraph at lines 64--108
+\teni highThreshold\tenrm ()\teni ; width; height\tenrm ); \teni deletetps\tenr
+m ; \teni delete\tenrm []\teni tmp\tenrm ; \teni intfirstDenoiseThresh \tenrm =
+ \teni roundd\tenrm (\teni width \tensy ^^C \teni height=\tenrm 5000); \teni do
+uble \tensy ^^C|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\teni h
+.\teni i
+.\teni g
+.\kern0.35878
+.\teni h
+.etc.
+
+
+Overfull \hbox (119.8493pt too wide) in paragraph at lines 64--108
+\teni denoisedImage \tenrm = \teni m\tensy ^^@ \teni > binaryDenoise\tenrm (\te
+ni thresholdedImage; width; height; firstDenoiseThresh; \tenrm 2); \teni delete
+\tenrm []\teni thresholdedImage\tenrm ; \teni double \tensy ^^C|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\teni d
+.\teni e
+.\teni n
+.\teni o
+.\teni i
+.etc.
+
+
+Overfull \hbox (12.01184pt too wide) in paragraph at lines 64--108
+\teni dilatedImage \tenrm = \teni m\tensy ^^@ \teni > dilate\tenrm (\teni denoi
+sedImage; width; height\tenrm ); \teni delete\tenrm []\teni denoisedImage\tenrm
+ ; \teni double \tensy ^^C \teni thinnedImage \tenrm =|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\teni d
+.\teni i
+.\teni l
+.\kern0.19678
+.\teni a
+.etc.
+
+
+Overfull \hbox (25.90742pt too wide) in paragraph at lines 64--108
+\teni m\tensy ^^@ \teni > thin\tenrm (\teni dilatedImage; width; height\tenrm )
+; \teni delete\tenrm []\teni dilatedImage\tenrm ; \teni double \tensy ^^C \teni
+ detangledImage \tenrm = \teni m\tensy ^^@ \teni > detangle\tenrm (\teni m\tens
+y ^^@ \teni >|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\teni m
+.\tensy ^^@
+.\glue(\thickmuskip) 2.77771 plus 2.77771
+.\teni >
+.\penalty 500
+.etc.
+
+
+Overfull \hbox (102.94873pt too wide) in paragraph at lines 64--108
+\teni detangle\tenrm (\teni thinnedImage; width; height\tenrm )\teni ; width; h
+eight\tenrm ); \teni delete\tenrm []\teni thinnedImage\tenrm ; \teni Interpolat
+ion \tensy ^^C \teni interp \tenrm = \teni newInterpolation\tenrm (); \teni dou
+ble \tensy ^^C|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\teni d
+.\teni e
+.\teni t
+.\teni a
+.\teni n
+.etc.
+
+
+Overfull \hbox (75.44885pt too wide) in paragraph at lines 64--108
+\teni interpolatedImage \tenrm = \teni interp\tensy ^^@ \teni > interpolate\ten
+rm (\teni detangledImage; width; height\tenrm ); \teni delete\tenrm []\teni det
+angledImage\tenrm ; \teni intpruneThreshold \tenrm =|
+
+\hbox(7.5+2.5)x469.75499
+.\teni i
+.\teni n
+.\teni t
+.\teni e
+.\teni r
+.etc.
+
+
+Overfull \hbox (359.36386pt too wide) in paragraph at lines 64--108
+\teni roundd\tenrm (\teni sqrt\tenrm ((\teni double\tenrm )(\teni width \tensy 
+^^C \teni height\tenrm ))\teni =\tenrm 50\teni :\tenrm 0); \teni double \tensy 
+^^C \teni prunedImage \tenrm = \teni m\tensy ^^@ \teni > prune\tenrm (\teni int
+erpolatedImage; pruneThreshold; width; height\tenrm ); \teni delete\tenrm []\te
+ni interpolatedImage\tenrm ; \teni intfinalDenoiseThresh \tenrm =|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\teni r
+.\kern0.27779
+.\teni o
+.\teni u
+.\teni n
+.etc.
+
+
+Overfull \hbox (140.77397pt too wide) in paragraph at lines 109--117
+[]\tenrm double *ske-le-ton = pru-ne-dI-mage; for(int i=0; i<3; i++) ske-le-ton
+ = m->prune(m->detangle(interp->interpolate(m->binaryDenoise(skeleton,|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm d
+.\tenrm o
+.\tenrm u
+.\tenrm b
+.etc.
+
+)
+! Emergency stop.
+<*> mainMatlab.cpp
+                  
+*** (job aborted, no legal \end found)
+
+No pages of output.
