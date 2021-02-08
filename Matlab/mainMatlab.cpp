@@ -45,20 +45,26 @@ double *resize(double *image, int width, int height, double scale){
   double kx = (double)width/(double)width1;
   double ky = (double)height/(double)height1;
   double *resizedImage = new double[width1*height1];
+
+  double alphax, alphay, alpha, alphaSum;
   for(int x=0; x<width1; x++)
     for(int y=0; y<height1; y++){
       resizedImage[y*width1+x]=0;
-      double alphaSum=0;
+      alphaSum=0;
+      //double alphaSum=0;
       for(int i=floor(x*kx - kx/2); i<ceil(x*kx+kx/2); i++)
-	for(int j=floor(y*ky - ky/2); j<ceil(y*ky+ky/2); j++){
-	  if(i<0 || i>= width || j<0 || j>=height)
-	    continue;
-	  double alphax = (i < ceil(x*kx - kx/2)) ? 1 - ((x*kx - kx/2) - floor(x*kx - kx/2)) : (i>floor(x*kx + kx/2)) ? x*kx + kx/2 - floor(x*kx + kx/2) : 1;
-	  double alphay = (i < ceil(y*ky - ky/2)) ? 1 - ((y*ky - ky/2) - floor(y*ky - ky/2)) : (i>floor(y*ky + ky/2)) ? y*ky + ky/2 - floor(y*ky + ky/2) : 1;
-	  double alpha = alphax*alphay;
-	  resizedImage[y*width1+x] += alpha*image[j*width+i];
-	  alphaSum += alpha;
-	}
+        for(int j=floor(y*ky - ky/2); j<ceil(y*ky+ky/2); j++){
+          if(i < 0 || i >= width || j < 0 || j >= height)
+            continue;
+          // double alphax = (i < ceil(x*kx - kx/2)) ? 1 - ((x*kx - kx/2) - floor(x*kx - kx/2)) : (i>floor(x*kx + kx/2)) ? x*kx + kx/2 - floor(x*kx + kx/2) : 1;
+          // double alphay = (i < ceil(y*ky - ky/2)) ? 1 - ((y*ky - ky/2) - floor(y*ky - ky/2)) : (i>floor(y*ky + ky/2)) ? y*ky + ky/2 - floor(y*ky + ky/2) : 1;
+          // double alpha = alphax*alphay;
+          alphax = (i < ceil(x*kx - kx/2)) ? 1 - ((x*kx - kx/2) - floor(x*kx - kx/2)) : (i>floor(x*kx + kx/2)) ? x*kx + kx/2 - floor(x*kx + kx/2) : 1;
+          alphay = (i < ceil(y*ky - ky/2)) ? 1 - ((y*ky - ky/2) - floor(y*ky - ky/2)) : (i>floor(y*ky + ky/2)) ? y*ky + ky/2 - floor(y*ky + ky/2) : 1;
+          alpha = alphax*alphay;
+          resizedImage[y*width1+x] += alpha*image[j*width+i];
+          alphaSum += alpha;
+        }
       resizedImage[y*width1+x] = (alphaSum==0) ? image[(int)floor(y*ky - ky/2)*width + (int)floor(x*kx - kx/2)] : resizedImage[y*width1+x] / alphaSum;
     }
   return resizedImage;
@@ -71,7 +77,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]){
   int height = mxGetM(prhs[0]);  
   int numImages = nrhs;
   vector<double *> imageSet;
-//  double scale = 0.5;
+//  double scale = ;
   double scale = 700/sqrt((double)width*height);
   printf("Scale: %f \t Width: %d \t Height: %d\n", scale, int(scale*width), int(scale*height));
   for(int i=0; i<numImages; i++){
@@ -86,13 +92,20 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]){
   printf("Beginning to smooth...\n");
   NonlinearIso *ni = new NonlinearIso();
   double *edges = ni->nonlinearIso(imageSet, 10, iterations, width, height);
+
+  for(int i = 0; i < numImages; i++) {
+    delete[] imageSet.back();
+    imageSet.pop_back();
+  }
+
   delete ni;
   printf("Threshold Parameters...\n");
   thresholdParameters *tps = new thresholdParameters(edges, width, height);
   double *tmp = new double[width*height];
-  for(int i=0; i<width*height; i++)
+  for(int i = 0; i < width * height; i++)
     tmp[i] = 1-edges[i];
   delete[] edges;
+
   Morphology *m = new Morphology();
   double *thresholdedImage = m->doubleThreshold(tmp, tps->lowThreshold(), tps->highThreshold(), width, height);
   delete tps;
@@ -100,16 +113,32 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]){
 
   printf("Denoising Image...\n");
   int firstDenoiseThresh = roundd(width*height/5000);
-  printf("Binary Denoising Image...\n");
+//  printf("Binary Denoising Image...\n");
   double *denoisedImage = m->binaryDenoise(thresholdedImage, width, height, firstDenoiseThresh, 2);
   delete[] thresholdedImage;
+
+  /*
+  double *outImage = normalizeRepresentationOut(denoisedImage, width, height);
+
+  plhs[0] = mxCreateDoubleMatrix(height, width, mxREAL);
+  double *out = mxGetPr(plhs[0]);
+
+  for(int i=0; i<width*height; i++)
+    out[i] = outImage[i];
+//    out[i] = denoisedImage[i];
+
+  delete[] outImage;
+  delete[] edges;
+  delete[] thresholdedImage;
+  */
+
   printf("Dilating Image...\n");
   double *dilatedImage = m->dilate(denoisedImage, width, height);
   delete[] denoisedImage;
   printf("Thinning Image...\n");
   double *thinnedImage = m->thin(dilatedImage, width, height);
   delete[] dilatedImage;
-  printf("Detangling Image...\n");
+//  printf("Detangling Image...\n");
   double *detangledImage = m->detangle(m->detangle(thinnedImage, width, height), width, height);
   delete[] thinnedImage;
 
@@ -118,18 +147,22 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]){
   double *interpolatedImage = interp->interpolate(detangledImage, width, height);
   delete[] detangledImage;
   int pruneThreshold = roundd(sqrt((double)(width*height))/50.0);
-  printf("Pruning Image...\n");
+//  printf("Pruning Image...\n");
   double *prunedImage = m->prune(interpolatedImage, pruneThreshold, width, height);
   delete[] interpolatedImage;
   int finalDenoiseThresh = roundd(sqrt((double)width*height)/50.0);
   printf("Skeletonizing Image...\n");
   double *skeleton = prunedImage;
-  for(int i=0; i<3; i++)
+  for(int i=0; i<3; i++) {
     printf("Skeletonizing Image...Pass %d\n", i);
-    skeleton = m->prune(m->detangle(interp->interpolate(m->binaryDenoise(skeleton, width, height, finalDenoiseThresh, 2), width, height), width, height), pruneThreshold, width, height);
-  delete[] prunedImage;
+    double *skeletonDenoised = m->binaryDenoise(skeleton, width, height, finalDenoiseThresh, 2);
+    delete[] skeleton;
+    double *skeleton = m->prune(m->detangle(interp->interpolate(skeletonDenoised, width, height), width, height), pruneThreshold, width, height);
+    delete[] skeletonDenoised;
+  }
   printf("Normalizing Image...\n");
   double *outImage = normalizeRepresentationOut(skeleton, width, height);
+  delete[] prunedImage;
   delete[] skeleton;
   delete interp;
   delete m;
@@ -138,6 +171,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]){
   double *out = mxGetPr(plhs[0]);
 
   for(int i=0; i<width*height; i++)
-//    out[i] = denoisedImage[i];
     out[i] = outImage[i];
+
+  delete[] outImage;
 }

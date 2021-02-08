@@ -16,6 +16,8 @@ and download MinGW.
 %Get TIF image
 %t = Tiff('Pics/Pt_94kx_Conical 5sec_1fs_70umObj_5frames_02_1.ser_96.png','r');
 t = Tiff('Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_97.tif','r');
+displayImages = false;
+fuseImages = false;
 % Read in the image and convert it to double
 imageData = double(read(t));
 
@@ -41,51 +43,46 @@ tic
 skeleton = mainMatlab(imageData);
 toc
 
-% Added because the orientation of the image is incorrect (flipped along the 45 degree axis)
-% Should be moved to the C++ at some point
-flipped_skeleton = zeros(size(skeleton, 1), size(skeleton, 2));
-for i = 1:size(skeleton, 1)
-    for j = 1:size(skeleton, 2)
-        flipped_skeleton(i, j) = skeleton(j, i);
-    end
-end
-skeleton = flipped_skeleton;
-
 imwrite(skeleton, 'Pics/skel_out.png');
-J = imresize(skeleton, size(imageData, 1)/size(skeleton,1));
-C = imfuse(imageData, uint8(J));
 
-imwrite(rgb2gray(C), 'Pics/skel_out_overlay.png');
-%colormap gray;
+if (fuseImages)
+    J = imresize(skeleton, size(imageData, 1)/size(skeleton,1));
+    C = imfuse(imageData, uint8(J));
+    imwrite(rgb2gray(C), 'Pics/skel_out_overlay.png');
+end
 
-% %Display the original grain image
-% figure;
-% imagesc(imageData);
-% colormap gray;
-% colorbar;
-% title('Grain Image')
-% 
-% %Display the outputted skeleton
-% figure;
-% imagesc(skeleton);
-% colormap gray;
-% colorbar;
-% title('Skeleton')
-% 
-% %Resize the skeleton to the size of the TIF image
-% figure;
-% J = imresize(skeleton,2048/100);
-% imagesc(J)
-% colormap gray;
-% colorbar;
-% title('ResizedSkeleton')
-% 
-% %Overlay the skeleton onto the TIF image
-% figure;
-% C = imfuse(imageData,J);
-% imagesc(rgb2gray(C));
-% colormap gray;
-% colorbar;
-% title('Grains and Resized Skeleton')
+if (displayImages && fuseImages)
+    %colormap gray;
+
+    %Display the original grain image
+    figure;
+    imagesc(imageData);
+    colormap gray;
+    colorbar;
+    title('Grain Image')
+
+    %Display the outputted skeleton
+    figure;
+    imagesc(skeleton);
+    colormap gray;
+    colorbar;
+    title('Skeleton')
+
+    %Resize the skeleton to the size of the TIF image
+    figure;
+    J = imresize(skeleton,2048/100);
+    imagesc(J)
+    colormap gray;
+    colorbar;
+    title('ResizedSkeleton')
+
+    %Overlay the skeleton onto the TIF image
+    figure;
+    C = imfuse(imageData,J);
+    imagesc(rgb2gray(C));
+    colormap gray;
+    colorbar;
+    title('Grains and Resized Skeleton')
+end
 
 clear all;

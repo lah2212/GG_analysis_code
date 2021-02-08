@@ -158,10 +158,10 @@ class Morphology{
   }
 
   double *thresh(double *image, double thresh, int width, int height){
-    double *thresholdedImage=new double[width*height];
-    for(int i=0; i<width; i++)
-      for(int j=0; j<height; j++)
-	thresholdedImage[j*width+i] = (image[j*width+i] > thresh) ? 1 : 0;
+    double *thresholdedImage = new double[width*height];
+    for(int i=0; i < width; i++)
+      for(int j=0; j < height; j++)
+        thresholdedImage[j*width+i] = (image[j*width+i] > thresh) ? 1 : 0;
     
     return thresholdedImage;
   }
@@ -172,21 +172,26 @@ class Morphology{
     pi = 3.141592654;
   }
   
-  
   double *doubleThreshold(double *image, double lowThresh, double highThresh, int width, int height){
     double *lowThresholded= new double[width*height];
-    lowThresholded=thresh(image, lowThresh, width, height);
+    lowThresholded = thresh(image, lowThresh, width, height);
     double *highThresholded= new double[width*height];
-    highThresholded=thresh(image, highThresh, width, height);
+    highThresholded = thresh(image, highThresh, width, height);
     double *thresholdedImage= new double[width*height];
     queue<Point *> nextPoints;
+
     bool *visited = new bool[width*height];
-    for(int i=0; i<width*height; i++)
-      visited[i]=false;
+    for(int i=0; i < width*height; i++) {
+      thresholdedImage[i] = 0;
+      visited[i] = false;
+    }
     
-    
-    for(int i=0; i<width; i++)
-      for(int j=0; j<height; j++){
+    // This alorithm seems to look for a lit pixel on the highthreshold image 
+    // and then see if any of its neighbors are in the low threshold
+    // I think the assumption is that the high-threshold pixels will always be
+    // on an edge, and its neighbors on the low-threshold image will be too
+    for(int i=0; i < width; i++) {
+      for(int j=0; j < height; j++) {
         if(visited[j*width+i])
           continue;
         if(highThresholded[j*width+i] != 0){
@@ -194,24 +199,32 @@ class Morphology{
           thresholdedImage[j*width+i] = 1;
           do{
             Point *tmp = nextPoints.front();
-            int i1=tmp->x;
-            int j1=tmp->y;
+            int i1 = tmp->x;
+            int j1 = tmp->y;
             nextPoints.pop();
-            visited[j1*width+i1]=true;
-            for(int m=-1; m<2; m++)
-              for(int n=-1; n<2; n++)
-            if(i1+m>=0 && i1+m<width && j1+n>=0 && j1+n<height)
-              if(!(n==0 && m==0) && !visited[(j1+n)*width+i1+m]){
-                if(lowThresholded[(j1+n)*width+i1+m] != 0){
-                  thresholdedImage[(j1+n)*width+i1+m] = 1;
-                  visited[(j1+n)*width+i1+m]=true;
-                  nextPoints.push(new Point(i1+m, j1+n));
+            visited[j1*width+i1] = true;
+            // This checks to see if the neighbors are in the low threshold
+            // First seeing if the neighbor is on the image
+            for(int m=-1; m < 2; m++) {
+              for(int n=-1; n < 2; n++) {
+                if(i1+m < 0 || i1+m >= width || j1+n < 0 || j1+n >= height)
+                    continue;
+                if(!(n==0 && m==0) && !visited[((j1+n) * width) + i1 + m]){
+                  if(lowThresholded[((j1+n) * width) + (i1+m)] != 0){
+                    thresholdedImage[((j1+n) * width) + (i1+m)] = 1;
+                    visited[((j1+n) * width) + (i1+m)] = true;
+                    nextPoints.push(new Point(i1+m, j1+n));
+                  }
                 }
+
               }
+            }
+
           }
           while(!nextPoints.empty());
         }
       }
+    }
     
     delete[] visited;
     delete[] lowThresholded;
@@ -222,6 +235,7 @@ class Morphology{
 
   
   double *detangle(double *image, int width, int height){
+    printf("Detangling Image...\n");
     
     double threshold = (double)(width*height)/1200;
     tripleDetector *td = new tripleDetector();
@@ -229,7 +243,7 @@ class Morphology{
     double *detangledImage { new double[width * height]{} };
     bool *visited{ new bool[width * height]{} };
     vector<Point *> region;
-    double intermediateImage[width*height];
+    double *intermediateImage{ new double[width*height]{} };
     //double *intermediateImage = new double[width*height];
     /*
 //    double *detangledImage = new double[width * height];
@@ -385,7 +399,7 @@ class Morphology{
 //      printf(".");
     }
 
-//    delete[] intermediateImage;
+    delete[] intermediateImage;
     delete[] visited;
 
     for(int i=0; i<width*height; i++)
@@ -415,9 +429,9 @@ class Morphology{
 
 
   double *binaryDenoise(double *image, int width, int height, int threshold, int neighThresh){
+    printf("Binary Denoising Image...\n");
     double *denoisedImage = new double[width * height];
-    bool visited[width * height];
-//    bool *visited = new bool[width * height];
+    bool *visited = new bool[width * height];
     vector<Point *> region;
 
     for (int k = 0; k < width * height; k++){
@@ -471,9 +485,8 @@ class Morphology{
           while (!nextPoints.empty());
           region.clear();
         }
-
       }
-// delete[] visited;
+    delete[] visited;
     return denoisedImage;
   }
 
@@ -680,11 +693,11 @@ class Morphology{
       c[i] = a[i];
     }
     
-//    int *lookup = new int[size];
-//    bool *G1lookup = new bool[size];
-//    bool *G2lookup = new bool[size];
-//    bool *G3lookup = new bool[size];
-//    bool *G4lookup = new bool[size];
+    int *lookup = new int[size];
+    bool *G1lookup = new bool[size];
+    bool *G2lookup = new bool[size];
+    bool *G3lookup = new bool[size];
+    bool *G4lookup = new bool[size];
     while (true){
       // Make a lookup table that will produce
       // a lookup table indices. This is avoid
@@ -698,20 +711,22 @@ class Morphology{
 
       // Apply the lutlut LUT to a, yielding lookup
       // >> lookup = applylut(a, lutlut);
-      int *lookup = new int[size];
+//      int *lookup = new int[size];
       for (int y = 0; y < height; y++)
         for (int x = 0; x < width; x++)
           lookup[x + y * width] = lutlut[Nhood3Offset(c, width, height, x, y)];
 
       // First subiteration
       // >> d(:) = G1(lookup) & G2(lookup) & G3(lookup);
-      bool *G1lookup = new bool[size];
-      bool *G2lookup = new bool[size];
-      bool *G3lookup = new bool[size];
-      bool *G4lookup = new bool[size];
-      for (int i = 0; i < size; i++) G1lookup[i] = G1[lookup[i]];
-      for (int i = 0; i < size; i++) G2lookup[i] = G2[lookup[i]];
-      for (int i = 0; i < size; i++) G3lookup[i] = G3[lookup[i]];
+//      bool *G1lookup = new bool[size];
+//      bool *G2lookup = new bool[size];
+//      bool *G3lookup = new bool[size];
+//      bool *G4lookup = new bool[size];
+      for (int i = 0; i < size; i++){
+        G1lookup[i] = G1[lookup[i]];
+        G2lookup[i] = G2[lookup[i]];
+        G3lookup[i] = G3[lookup[i]];
+      }
       for (int i = 0; i < size; i++)
         d[i] = (bool)(G1lookup[i] & G2lookup[i] & G3lookup[i]);
       // >> c = a & ~d;
@@ -720,18 +735,21 @@ class Morphology{
 
       // Second subiteration
       // >> lookup = applylut(c, lutlut);
-      G1lookup = new bool[size];
-      G2lookup = new bool[size];
-      G3lookup = new bool[size];
-      G4lookup = new bool[size];
-      lookup = new int[size];
+//      G1lookup = new bool[size];
+//      G2lookup = new bool[size];
+//      G3lookup = new bool[size];
+//      G4lookup = new bool[size];
+//      lookup = new int[size];
+
       for (int y = 0; y < height; y++)
         for (int x = 0; x < width; x++)
           lookup[x + y * width] = lutlut[Nhood3Offset(c, width, height, x, y)];
       // >> d(:) = G1(lookup) & G2(lookup) & G4(lookup);
-      for (int i = 0; i < size; i++) G1lookup[i] = G1[lookup[i]];
-      for (int i = 0; i < size; i++) G2lookup[i] = G2[lookup[i]];
-      for (int i = 0; i < size; i++) G4lookup[i] = G4[lookup[i]];
+      for (int i = 0; i < size; i++){
+        G1lookup[i] = G1[lookup[i]];
+        G2lookup[i] = G2[lookup[i]];
+        G4lookup[i] = G4[lookup[i]];
+      }
       for (int i = 0; i < size; i++)
         d[i] = (bool)(G1lookup[i] & G2lookup[i] & G4lookup[i]);
       // >> c = c & ~d;
@@ -750,10 +768,11 @@ class Morphology{
 
     }
 
-//    delete[] G1lookup;
-//    delete[] G2lookup;
-//    delete[] G3lookup;
-//    delete[] G4lookup;
+    delete[] lookup;
+    delete[] G1lookup;
+    delete[] G2lookup;
+    delete[] G3lookup;
+    delete[] G4lookup;
 
     double *resultMapBitmap = new double[size];
     for(int i=0; i<size; i++)
@@ -770,7 +789,7 @@ class Morphology{
     int weights3[3][3];
     for(int i=0; i<3; i++)
       for(int j=0; j<3; j++)
-	weights3[i][j] = pow(2.0, i*3+j);
+        weights3[i][j] = pow(2.0, i*3+j);
 
     int minX, maxX, minY, maxY;
     int result = 0;
@@ -807,8 +826,9 @@ function [c,lut] = thin(a)
 
 
   double *prune(double *skel, int threshold, int width, int height){
+    printf("Pruning Image...\n");
   
-    printf("Testpoint0\n");
+//    printf("Testpoint0\n");
     double *clippedImage = new double[width*height];
     
     for(int i=0; i<width*height; i++)
@@ -829,7 +849,7 @@ function [c,lut] = thin(a)
       interestPts[tmp->y*width+tmp->x]=true;
     }
   
-    printf("Testpoint1\n");
+//    printf("Testpoint1\n");
     for(int i=0; i<ends.size(); i++){
       Point *tmp = ends[i];
       bool done=false;
@@ -857,7 +877,6 @@ function [c,lut] = thin(a)
         hasNeighbor:; // the semi-colon is an empty statement
       }
 
-      printf("Testpoint2\n");
       if(segment.size() < threshold)
         for(int k=0; k<segment.size(); k++) {
           Point *p = (Point *)segment[k];
