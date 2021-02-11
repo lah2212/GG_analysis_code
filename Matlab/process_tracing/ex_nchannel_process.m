@@ -2,31 +2,44 @@
 
 %Example file for calling grain boundary detection algorithm using n-channel images
 function ex_nchannel_process(varargin)
-    if (nargin)
+    folder = "bundle1";
+    filetype = "png";
+    if (nargin == 1)
       folder = varargin{1};
-    else
-      folder = "bundle1";
+    elseif (nargin >= 1)
+      folder = varargin{1};
+      filetype = varargin{2};
     end
-
-    a = double(imread('Pics/' + folder + '/a.png'));
-    b = double(imread('Pics/' + folder + '/b.png'));
-    c = double(imread('Pics/' + folder + '/c.png'));
-    d = double(imread('Pics/' + folder + '/d.png'));
 
     displayImages = false;
     fuseImages = false;
 
-    %Scale TIF image to be within the range 0-255
-    m = max(max(max(cat(3, a, b, c, d))));
-    a = a * (255/m);
-    b = b * (255/m);
-    c = c * (255/m);
-    d = d * (255/m);
-    %imageData = imageData*(255/m);
-    %Call algorithm to retrieve skeleton
+    cd("Pics/" + folder);
+    folderContents = dir('*.' + filetype);
+
+    images = [];
+    for i = 1:length(folderContents)
+      if (filetype == "tif")
+        a_tiff = Tiff(folderContents(i).name, 'r');
+        a = read(a_tiff);
+      else
+        a = imread(folderContents(i).name);
+      end
+
+      if (size(a,3) == 3)
+        a_bw = rgb2gray(a);
+        images = cat(3, images, double(a_bw));
+      else
+        images = cat(3, images, double(a));
+      end
+    end
+    m = max(max(max(images)));
+    images = images * (255/m);
+    cd('../..');
+    args = num2cell(images, [1 2]);
+
     tic
-    [edges, threshold, denoise] = mainMatlabProcess(a, b, c, d);
-%    [edges, threshold, denoise] = mainMatlabProcess(a);
+    [edges, threshold, denoise] = mainMatlabProcess(args{:});
     toc
 
     if ~exist('Pics/' + folder + '/results', 'dir')
