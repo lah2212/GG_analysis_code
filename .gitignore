@@ -4,3 +4,4 @@ Python/Bundle(temp).tif
 Python/Merged_image(temp).npy
 **/Pics/**
 .DS_Store
+*.swp

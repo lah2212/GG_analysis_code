@@ -1,13 +1,12 @@
-
 //Fixed Error: In function 'int round(double)'
 //Also Error in declaration of MexFunction
 
 #include <stdio.h>
 #include <iostream>
-#include "Smoothing.h"
-#include "Morphology.h"
-#include "thresholdParameters.h"
-#include "interpolation.h"
+#include "../Smoothing.h"
+#include "../Morphology.h"
+#include "../thresholdParameters.h"
+#include "../interpolation.h"
 #include "mex.h"
 #include <vector>
 using namespace std;
@@ -72,14 +71,14 @@ double *resize(double *image, int width, int height, double scale){
 
 //Change to MexFunction
 //void mexFunction(int nlhs, mxArray* plhs[], int nrhs, mxArray* prhs[])
-void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]){ 
+void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) { 
   printf("Using %d Images\n", nrhs);
   int width = mxGetN(prhs[0]);
   int height = mxGetM(prhs[0]);  
   int numImages = nrhs;
   vector<double *> imageSet;
-//  double scale = 1;
-  double scale = 700/sqrt((double)width*height);
+  double scale = 1;
+//  double scale = 700/sqrt((double)width*height);
   printf("Scale: %f \t Width: %d \t Height: %d\n", scale, int(scale*width), int(scale*height));
   for(int i=0; i<numImages; i++){
     double *in = normalizeRepresentationIn(mxGetPr(prhs[i]), width, height);
@@ -105,60 +104,39 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]){
   double *tmp = new double[width*height];
   for(int i = 0; i < width * height; i++)
     tmp[i] = 1-edges[i];
-  delete[] edges;
+//  delete[] edges;
 
   Morphology *m = new Morphology();
   double *thresholdedImage = m->doubleThreshold(tmp, tps->lowThreshold(), tps->highThreshold(), width, height);
   delete tps;
   delete[] tmp;
 
-  printf("Denoising Image...\n");
   int firstDenoiseThresh = roundd(width*height/5000);
   printf("Binary Denoising Image...\n");
   double *denoisedImage = m->binaryDenoise(thresholdedImage, width, height, firstDenoiseThresh, 2);
-  delete[] thresholdedImage;
+//  delete[] thresholdedImage;
 
-  printf("Dilating Image...\n");
-  double *dilatedImage = m->dilate(denoisedImage, width, height);
-  delete[] denoisedImage;
-  printf("Thinning Image...\n");
-  double *thinnedImage = m->thin(dilatedImage, width, height);
-  delete[] dilatedImage;
-//  printf("Detangling Image...\n");
-  double *detangledImage = m->detangle(m->detangle(thinnedImage, width, height), width, height);
-  delete[] thinnedImage;
-
-  Interpolation *interp = new Interpolation();
-  printf("Interpolating Image...\n");
-  double *interpolatedImage = interp->interpolate(detangledImage, width, height);
-  delete[] detangledImage;
-  int pruneThreshold = roundd(sqrt((double)(width*height))/50.0);
-  printf("Pruning Image...\n");
-  double *prunedImage = m->prune(interpolatedImage, pruneThreshold, width, height);
-  delete[] interpolatedImage;
-  int finalDenoiseThresh = roundd(sqrt((double)width*height)/50.0);
-
-  double *skeleton = prunedImage;
-  double *skeletonDenoised;
-  for(int i=0; i<3; i++) {
-    printf("Skeletonizing Image...Pass %d of 3\n", i + 1);
-    skeletonDenoised = m->binaryDenoise(skeleton, width, height, finalDenoiseThresh, 2);
-    delete[] skeleton;
-    skeleton = m->prune(m->detangle(interp->interpolate(skeletonDenoised, width, height), width, height), pruneThreshold, width, height);
-    delete[] skeletonDenoised;
-  }
-  printf("Normalizing Image...\n");
-  double *outImage = normalizeRepresentationOut(skeleton, width, height);
-//  delete[] prunedImage;
-  delete[] skeleton;
-  delete interp;
-  delete m;
+  double *edgeoutImage = normalizeRepresentationOut(edges, width, height);
+  double *threshoutImage = normalizeRepresentationOut(thresholdedImage, width, height);
+  double *denoiseoutImage = normalizeRepresentationOut(denoisedImage, width, height);
 
   plhs[0] = mxCreateDoubleMatrix(height, width, mxREAL);
-  double *out = mxGetPr(plhs[0]);
+  plhs[1] = mxCreateDoubleMatrix(height, width, mxREAL);
+  plhs[2] = mxCreateDoubleMatrix(height, width, mxREAL);
+  double *edgeout = mxGetPr(plhs[0]);
+  double *threshout = mxGetPr(plhs[1]);
+  double *denoiseout = mxGetPr(plhs[2]);
 
-  for(int i=0; i<width*height; i++)
-    out[i] = outImage[i];
+  for(int i=0; i<width*height; i++) {
+    edgeout[i] = edgeoutImage[i];
+    threshout[i] = threshoutImage[i];
+    denoiseout[i] = denoiseoutImage[i];
+  }
 
-  delete[] outImage;
+  delete[] edges;
+  delete[] thresholdedImage;
+  delete[] denoisedImage;
+  delete[] edgeoutImage;
+  delete[] threshoutImage;
+  delete[] denoiseoutImage;
 }
