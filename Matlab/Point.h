@@ -47,7 +47,7 @@ class Point{
 	}
 	char *toString(){
 	  char *pt = new char[100];
-	  sprintf(pt, "(%f, %f)", x, y);
+	  sprintf(pt, "(%d, %d)", x, y);
 	  return pt;
     }
       
@@ -67,7 +67,4 @@ class Point{
         return new Point((int)(x/b), int(y/b));  
     }
 };
-
-
-
 

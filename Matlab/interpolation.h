@@ -269,16 +269,21 @@ class Interpolation{
 	  int x = receivePt->x, y = receivePt->y;
 	  Point *ngh1=NULL;
 	  Point *ngh2=NULL;
-	  for(int m=x-1; m<=x+1; m++)
+	  for(int m=x-1; m<=x+1; m++){
 	    for(int n=y-1; n<=y+1; n++){
-	      if((m==x && n==y) || m<0 || n<0 || m>=width || n>=height)
-		continue;
-	      if(skeleton[n*width+m] != 0)
-		if(ngh1 == NULL)
-		  ngh1 = new Point(m, n);
-		else if(ngh1->distanceFrom(new Point(m, n)) > 1)
-		  ngh2 = new Point(m, n);
+	      if((m==x && n==y) || m<0 || n<0 || m>=width || n>=height){
+            continue;
+          }
+          if(skeleton[n*width+m] != 0) {
+              if(ngh1 == NULL){
+                ngh1 = new Point(m, n);
+              }
+              else if(ngh1->distanceFrom(new Point(m, n)) > 1){
+                ngh2 = new Point(m, n);
+              }
+          }
 	    }
+      }
 	  if(ngh2==NULL){
 	    continue;
 	  }
