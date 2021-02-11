@@ -5,3 +5,5 @@ Python/Merged_image(temp).npy
 **/Pics/**
 .DS_Store
 *.swp
+*.mexw64
+*.mexmaci64
