@@ -1,9 +1,9 @@
 % 2/10/21
 % This program is designed to be rudimentary alignment checking software
 
-im1_tif = Tiff("../Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_97.tif", 'r');
-im2_tif = Tiff("../Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_98.tif", 'r');
-im3_tif = Tiff("../Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_99.tif", 'r');
+im1_tif = Tiff("Pics/Pt_94kx_Conical_30um/Pt_94kx_Conical 5sec_1fs_30umObj_5frames_02_1.ser_98.tif", 'r');
+im2_tif = Tiff("Pics/Pt_94kx_Conical_30um/Pt_94kx_Conical 5sec_1fs_30umObj_5frames_02_1.ser_99.tif", 'r');
+im3_tif = Tiff("Pics/Pt_94kx_Conical_30um/Pt_94kx_Conical 5sec_1fs_30umObj_5frames_02_1.ser_100.tif", 'r');
 
 im1 = double(read(im1_tif));
 im2 = double(read(im2_tif));

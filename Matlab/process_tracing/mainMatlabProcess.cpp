@@ -17,7 +17,6 @@ int roundd(double x){
   return (x - floor(x) > 0.5) ? floor(x)+1 : floor(x);
 }
 
-
 double *normalizeRepresentationIn(double *x, int width, int height){
   double *out = new double[width*height];
   for(int i=0; i<width; i++){
@@ -72,15 +71,26 @@ double *resize(double *image, int width, int height, double scale){
 //Change to MexFunction
 //void mexFunction(int nlhs, mxArray* plhs[], int nrhs, mxArray* prhs[])
 void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) { 
-  printf("Using %d Images\n", nrhs);
   int width = mxGetN(prhs[0]);
   int height = mxGetM(prhs[0]);  
-  int numImages = nrhs;
+  int numImages = nrhs - 1;
   vector<double *> imageSet;
-  double scale = 1;
-//  double scale = 700/sqrt((double)width*height);
+
+  int nargs = mxGetN(prhs[nrhs - 1]);
+  double *args = mxGetPr(prhs[nrhs - 1]);
+  double scale;
+  if (args[0] != 0) {
+    scale = args[0];
+  } else if (nargs == 3) {
+    // Add threshold stuff here
+  } else {
+    scale = 1;
+//  scale = 700/sqrt((double)width*height);
+  }
+
+  printf("Using %d Images\n", numImages);
   printf("Scale: %f \t Width: %d \t Height: %d\n", scale, int(scale*width), int(scale*height));
-  for(int i=0; i<numImages; i++){
+  for(int i=0; i < numImages; i++){
     double *in = normalizeRepresentationIn(mxGetPr(prhs[i]), width, height);
     imageSet.push_back(resize(in, width, height, scale));
     delete[] in;

@@ -4,11 +4,16 @@
 function ex_nchannel_process(varargin)
     folder = "bundle1";
     filetype = "png";
+    scale = 0;
     if (nargin == 1)
       folder = varargin{1};
-    elseif (nargin >= 1)
+    elseif (nargin == 2)
       folder = varargin{1};
       filetype = varargin{2};
+    elseif (nargin >= 2)
+      folder = varargin{1};
+      filetype = varargin{2};
+      scale = double(varargin{3});
     end
 
     displayImages = false;
@@ -39,7 +44,7 @@ function ex_nchannel_process(varargin)
     args = num2cell(images, [1 2]);
 
     tic
-    [edges, threshold, denoise] = mainMatlabProcess(args{:});
+    [edges, threshold, denoise] = mainMatlabProcess(args{:}, [scale]);
     toc
 
     if ~exist('Pics/' + folder + '/results', 'dir')
