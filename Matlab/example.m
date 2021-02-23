@@ -17,7 +17,7 @@ and download MinGW.
 %t = Tiff('Pics/Pt_94kx_Conical 5sec_1fs_70umObj_5frames_02_1.ser_96.png','r');
 t = Tiff('Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_97.tif','r');
 displayImages = false;
-fuseImages = false;
+fuseImages = true;
 % Read in the image and convert it to double
 imageData = double(read(t));
 

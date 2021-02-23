@@ -429,7 +429,6 @@ class Morphology{
 
 
   double *binaryDenoise(double *image, int width, int height, int threshold, int neighThresh){
-    printf("Binary Denoising Image...\n");
     double *denoisedImage = new double[width * height];
     bool *visited = new bool[width * height];
     vector<Point *> region;
