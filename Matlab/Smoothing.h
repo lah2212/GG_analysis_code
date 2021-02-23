@@ -7,6 +7,7 @@ using namespace std;
 class NonlinearIso{
     
  private:
+  // All of these fuctions initially bound the x and y within the edges of the image
   double dx(double *image, int x, int y, int width, int height){
     y = (y < 0) ? 0 : ((y > height - 1) ? height - 1 : y);
     x = (x <= 0) ? 1 : ((x >= width - 1) ? width - 2 : x);

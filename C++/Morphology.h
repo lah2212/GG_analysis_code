@@ -23,6 +23,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <algorithm>
 #include <vector>
 #include <queue>
 using namespace std;
@@ -68,7 +69,7 @@ class Morphology{
   double myAtanDiff(double x1, double x2){
     double tmp1 = atan(x1);
     double tmp2 = atan(x2);
-    return min(abs(tmp1-tmp2), 2*pi-abs(tmp1-tmp2));
+    return min((double) abs(tmp1-tmp2), 2*pi-abs(tmp1-tmp2));
   }
   
   

@@ -24,11 +24,10 @@
 #endif
 
 #include <math.h>
+#include <algorithm>
 #include <stdlib.h>
 #include <vector>
 using namespace std;
-
-
 
 class Interpolation{
  private:
@@ -146,15 +145,20 @@ class Interpolation{
 
   
   double rayDiff(Ray *r1, Ray *r2){
-    double absAngle1 = absoluteAngle(r1), absAngle2 = absoluteAngle(r2);
-    return min(abs(absAngle1 - absAngle2), abs(2*pi - abs(absAngle1 - absAngle2)));
+    double absAngle1 = absoluteAngle(r1);
+    double absAngle2 = absoluteAngle(r2);
+
+    double rayAngleDiff = abs(absAngle1 - absAngle2);
+    return (rayAngleDiff < 2*pi) ? rayAngleDiff : abs(2*pi - rayAngleDiff);
+//    return min((double) abs(absAngle1 - absAngle2), abs(2*pi - abs(absAngle1 - absAngle2)));
   }
 
 
 
   Ray *rayComposition(Ray *r1, Ray *r2){
     double absAngle, absAngle1 = absoluteAngle(r1), absAngle2 = absoluteAngle(r2);
-    double theta = min(abs(absAngle1 - absAngle2), 2*pi - abs(absAngle1 - absAngle2));
+    double theta = min((double) abs(absAngle1 - absAngle2), 
+                        2*pi - abs(absAngle1 - absAngle2));
     if(theta == abs(absAngle1 - absAngle2))
       if(max(absAngle1, absAngle2) < pi)
 	absAngle = max(absAngle1, absAngle2) + pi - theta/2;
