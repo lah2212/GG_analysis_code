@@ -133,7 +133,6 @@ double *algorithm(int numImages, double *image, int width, int height, double sc
   delete tps;
   delete[] tmp;
 
-  printf("Denoising Image...\n");
   int firstDenoiseThresh = roundd(width*height/5000);
 //  printf("Binary Denoising Image...\n");
   double *denoisedImage = m->binaryDenoise(thresholdedImage, width, height, firstDenoiseThresh, 2);

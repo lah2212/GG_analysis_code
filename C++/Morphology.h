@@ -455,8 +455,8 @@ class Morphology{
       for (int j = 0; j < height; j++){
         if (denoisedImage[j * width + i] == 0 && image[j * width + i] != 0) {
           int i1, j1;
-          Point p = {i, j};
-          nextPoints.push(p);
+//          Point p = {i, j};
+          nextPoints.push(Point{i, j});
           do {
             Point tmp = (Point) nextPoints.front();
             nextPoints.pop();
@@ -467,8 +467,8 @@ class Morphology{
 //            i1 = tmp->x;
 //            j1 = tmp->y;
             if (region.size() < threshold) {
-              Point tmpr = {i1, j1};
-              region.push_back(tmpr);
+//              Point tmpr = {i1, j1};
+              region.push_back(Point{i1, j1});
             }
             else if (region.size() == threshold) {
               for (int h = 0; h < region.size(); h++){
@@ -493,8 +493,8 @@ class Morphology{
                   if (!visited[nextJ * width + nextI]) {
                     visited[nextJ * width + nextI] = true;
                     if (image[nextJ * width + nextI] != 0 && denoisedImage[nextJ * width + nextI] == 0)
-                      Point p = {nextI, nextJ};
-                      nextPoints.push(p);
+                      //Point p = {nextI, nextJ};
+                      nextPoints.push(Point{nextI, nextJ});
                   }
               }
           }
