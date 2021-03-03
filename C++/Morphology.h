@@ -174,11 +174,11 @@ class Morphology{
   }
   
   double *doubleThreshold(double *image, double lowThresh, double highThresh, int width, int height){
-    double *lowThresholded= new double[width*height];
-    lowThresholded = thresh(image, lowThresh, width, height);
-    double *highThresholded= new double[width*height];
-    highThresholded = thresh(image, highThresh, width, height);
-    double *thresholdedImage= new double[width*height];
+//    double *lowThresholded = new double[width*height];
+    double *lowThresholded = thresh(image, lowThresh, width, height);
+//    double *highThresholded = new double[width*height];
+    double *highThresholded = thresh(image, highThresh, width, height);
+    double *thresholdedImage = new double[width*height];
     queue<Point *> nextPoints;
 
     bool *visited = new bool[width*height];
@@ -196,6 +196,7 @@ class Morphology{
         if(visited[j*width+i])
           continue;
         if(highThresholded[j*width+i] != 0){
+          //new Point(i, j)
           nextPoints.push(new Point(i, j));
           thresholdedImage[j*width+i] = 1;
           do{
