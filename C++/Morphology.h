@@ -197,10 +197,10 @@ class Morphology{
           continue;
         if(highThresholded[j*width+i] != 0){
           //new Point(i, j)
-          Point p = {i, j};
-          nextPoints.push(p);
+//          Point p = {i, j};
+          nextPoints.push(Point{i, j});
           thresholdedImage[j*width+i] = 1;
-          do{
+          do {
 //            Point *tmp = nextPoints.front();
 //            int i1 = tmp->x;
 //            int j1 = tmp->y;
@@ -440,14 +440,14 @@ class Morphology{
     printf("Binary Denoising Image...\n");
     double *denoisedImage = new double[width * height];
     bool *visited = new bool[width * height];
-    vector<Point *> region;
+    vector<Point> region;
 
     for (int k = 0; k < width * height; k++){
       denoisedImage[k] = 0;
       visited[k] = false;
     }
 
-    queue<Point *> nextPoints;
+    queue<Point> nextPoints;
 
     // Loop through every pixel, and if its 0 in the denoised image an not zero in the normal image
     //
@@ -455,18 +455,25 @@ class Morphology{
       for (int j = 0; j < height; j++){
         if (denoisedImage[j * width + i] == 0 && image[j * width + i] != 0) {
           int i1, j1;
-          nextPoints.push(new Point(i, j));
+          Point p = {i, j};
+          nextPoints.push(p);
           do {
-            Point *tmp = (Point *)nextPoints.front();
+            Point tmp = (Point) nextPoints.front();
             nextPoints.pop();
-            i1 = tmp->x;
-            j1 = tmp->y;
-            if (region.size() < threshold)
-              region.push_back(new Point(i1, j1));
+            i1 = tmp.x;
+            j1 = tmp.y;
+//            Point *tmp = (Point *)nextPoints.front();
+//            nextPoints.pop();
+//            i1 = tmp->x;
+//            j1 = tmp->y;
+            if (region.size() < threshold) {
+              Point tmpr = {i1, j1};
+              region.push_back(tmpr);
+            }
             else if (region.size() == threshold) {
               for (int h = 0; h < region.size(); h++){
-                Point *p = region.at(h);
-                denoisedImage[p->y * width + p->x] = 1;
+                Point p = region.at(h);
+                denoisedImage[p.y * width + p.x] = 1;
               }
               denoisedImage[j1 * width + i1] = 1;
             } 
@@ -486,7 +493,8 @@ class Morphology{
                   if (!visited[nextJ * width + nextI]) {
                     visited[nextJ * width + nextI] = true;
                     if (image[nextJ * width + nextI] != 0 && denoisedImage[nextJ * width + nextI] == 0)
-                      nextPoints.push(new Point(nextI, nextJ));
+                      Point p = {nextI, nextJ};
+                      nextPoints.push(p);
                   }
               }
           }
