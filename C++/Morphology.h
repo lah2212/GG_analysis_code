@@ -179,7 +179,7 @@ class Morphology{
 //    double *highThresholded = new double[width*height];
     double *highThresholded = thresh(image, highThresh, width, height);
     double *thresholdedImage = new double[width*height];
-    queue<Point *> nextPoints;
+    queue<Point> nextPoints;
 
     bool *visited = new bool[width*height];
     for(int i=0; i < width*height; i++) {
@@ -197,12 +197,17 @@ class Morphology{
           continue;
         if(highThresholded[j*width+i] != 0){
           //new Point(i, j)
-          nextPoints.push(new Point(i, j));
+          Point p = {i, j};
+          nextPoints.push(p);
           thresholdedImage[j*width+i] = 1;
           do{
-            Point *tmp = nextPoints.front();
-            int i1 = tmp->x;
-            int j1 = tmp->y;
+//            Point *tmp = nextPoints.front();
+//            int i1 = tmp->x;
+//            int j1 = tmp->y;
+//            nextPoints.pop();
+            Point tmp = nextPoints.front();
+            int i1 = tmp.x;
+            int j1 = tmp.y;
             nextPoints.pop();
             visited[j1*width+i1] = true;
             // This checks to see if the neighbors are in the low threshold
@@ -215,7 +220,8 @@ class Morphology{
                   if(lowThresholded[((j1+n) * width) + (i1+m)] != 0){
                     thresholdedImage[((j1+n) * width) + (i1+m)] = 1;
                     visited[((j1+n) * width) + (i1+m)] = true;
-                    nextPoints.push(new Point(i1+m, j1+n));
+                    Point p = {i1 + m, j1 + n};
+                    nextPoints.push(p);
                   }
                 }
 
