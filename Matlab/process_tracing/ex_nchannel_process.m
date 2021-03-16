@@ -38,6 +38,7 @@ function ex_nchannel_process(varargin)
         images = cat(3, images, double(a));
       end
     end
+
     m = max(max(max(images)));
     images = images * (255/m);
     cd('../..');

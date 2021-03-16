@@ -2,7 +2,8 @@ Python/Bundle(temp).tif
 Python/Merged_image(temp).npy
 **/Pics/**
 .DS_Store
-main.dSYM/**
+**/*.dSYM/**
+*.png
 *.swp
 *.mexw64
 *.mexmaci64
