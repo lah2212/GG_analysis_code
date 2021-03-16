@@ -401,10 +401,8 @@ class Morphology{
           }
           region.clear();
         }
-//        printf("%d, %d\n", i, j);
 	
       }
-//      printf(".");
     }
 
     delete[] intermediateImage;
@@ -714,17 +712,16 @@ class Morphology{
     bool *G2lookup = new bool[size];
     bool *G3lookup = new bool[size];
     bool *G4lookup = new bool[size];
-    while (true){
-      // Make a lookup table that will produce
-      // a lookup table indices. This is avoid
-      // doing more work in calling applylut
-      // multiple times with the same input than
-      // we really need to.
-      // >> lutlut = 1:512;
-      int *lutlut = new int[512];
-      for (int i = 0; i < 512; i++)
+    // Make a lookup table that will produce
+    // a lookup table indices. This is avoid
+    // doing more work in calling applylut
+    // multiple times with the same input than
+    // we really need to.
+    // >> lutlut = 1:512;
+    int *lutlut = new int[512];
+    for (int i = 0; i < 512; i++)
         lutlut[i] = i;
-
+    while (true) {
       // Apply the lutlut LUT to a, yielding lookup
       // >> lookup = applylut(a, lutlut);
 //      int *lookup = new int[size];
@@ -781,7 +778,6 @@ class Morphology{
       // Remember old result for next cycle
       for(int i=0; i<size; i++)
         b[i] = c[i];
-
     }
 
     delete[] lookup;
@@ -789,6 +785,7 @@ class Morphology{
     delete[] G2lookup;
     delete[] G3lookup;
     delete[] G4lookup;
+    delete[] lutlut;
 
     double *resultMapBitmap = new double[size];
     for(int i=0; i<size; i++)

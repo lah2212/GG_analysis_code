@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <vector>
+#include "tifimgio.cpp"
 using namespace std;
 
 
@@ -198,6 +199,18 @@ class NonlinearIso{
   //    return y;
     }
 
+    /*
+    double LoGFilter[] =  // sigma = 1.4
+    {0.0002, 0.0008, 0.0021, 0.0036, 0.0043, 0.0036, 0.0021, 0.0008, 0.0002, 
+     0.0008, 0.0030, 0.0070, 0.0100, 0.0108, 0.0100, 0.0070, 0.0030, 0.0008, 
+     0.0021, 0.0070, 0.0112, 0.0064, 0.0006, 0.0064, 0.0112, 0.0070, 0.0021, 
+     0.0036, 0.0100, 0.0064, -0.0244, -0.0478, -0.0244, 0.0064, 0.0100, 0.0036, 
+     0.0043, 0.0108, 0.0006, -0.0478, -0.0829, -0.0478, 0.0006, 0.0108, 0.0043, 
+     0.0036, 0.0100, 0.0064, -0.0244, -0.0478, -0.0244, 0.0064, 0.0100, 0.0036, 
+     0.0021, 0.0070, 0.0112, 0.0064, 0.0006, 0.0064, 0.0112, 0.0070, 0.0021, 
+     0.0008, 0.0030, 0.0070, 0.0100, 0.0108, 0.0100, 0.0070, 0.0030, 0.0008, 
+     0.0002, 0.0008, 0.0021, 0.0036, 0.0043, 0.0036, 0.0021, 0.0008, 0.0002}
+    */
 
     double *lapFilter(double *image, int width, int height, bool freeimage){
       double laplacianFilter[] = {0.16667, 0.66667, 0.16667,
@@ -256,67 +269,111 @@ class NonlinearIso{
       return out;
     }
    
-    double *diffusionTensor(vector<double *> images, int width, int height, double k, bool filterFirst) {
-      double *tensor = new double[width*height];
-      for(int i = 0; i < width * height; i++)
-        tensor[i] = 0;
+      double *diffusionTensor(vector<double *> images, int width, int height, double k, bool filterFirst) {
+        double *tensor = new double[width*height];
+        for(int i = 0; i < width * height; i++)
+          tensor[i] = 0;
 
-      double *medFilteredImage;
-      for(int imageNum=0; imageNum<images.size(); imageNum++) {
-        if(filterFirst)
-          medFilteredImage = medFilter(images[imageNum], width, height, false);
-        else {
-          medFilteredImage = new double[width*height];
-          for(int i=0; i<width*height; i++)
-            medFilteredImage[i] = images[imageNum][i];
-  //         delete[] medFilteredImage;
-  //         double *medFilteredImage = copy(images[imageNum], width, height);
+        double *medFilteredImage;
+        for(int imageNum=0; imageNum<images.size(); imageNum++) {
+          if(filterFirst)
+            medFilteredImage = medFilter(images[imageNum], width, height, false);
+          else {
+            medFilteredImage = new double[width*height];
+            for(int i=0; i<width*height; i++)
+              medFilteredImage[i] = images[imageNum][i];
+    //         delete[] medFilteredImage;
+    //         double *medFilteredImage = copy(images[imageNum], width, height);
+          }
+
+          for(int i=0; i<width; i++)
+            for(int j=0; j<height; j++)
+              tensor[j*width+i] += pow(sqrt(pow(dx(medFilteredImage, i, j, width, height), 2) + 
+                                pow(dy(medFilteredImage, i, j, width, height), 2)), 2);
         }
+        delete[] medFilteredImage;
 
-        for(int i=0; i<width; i++)
-          for(int j=0; j<height; j++)
-            tensor[j*width+i] += pow(sqrt(pow(dx(medFilteredImage, i, j, width, height), 2) + pow(dy(medFilteredImage, i, j, width, height), 2)), 2);
+        
+        QTiffIO tensor_tif;
+        tensor_tif.set_dimension(width, height);
+
+        tensor_tif.write("Pics/tensor0.tif", tensor, true);
+        
+        for(int i=0; i<width*height; i++)
+          tensor[i] = exp(-k*sqrt(tensor[i]));
+
+        tensor_tif.write("Pics/tensor2.tif", tensor, true);
+        
+        tensor = medFilter(tensor, width, height, true);
+
+        tensor_tif.write("Pics/tensor3.tif", tensor, true);
+        
+        tensor = lapFilter(tensor, width, height, true);
+
+        tensor_tif.write("Pics/tensor4.tif", tensor, true);
+        /*
+        uint16 *other_tensor = tensor_tif.open("Pics/fullsize_tensor/LoG-1.4.tif");
+
+        double *max_add = std::max_element(tensor, tensor + (width * height - 1));
+        double *min_add = std::min_element(tensor, tensor + (width * height - 1));
+        double max = *max_add;
+        double min = *min_add;
+        double range = max - min;
+
+        uint16 *other_max_add = std::max_element(other_tensor, other_tensor + (width * height - 1));
+        uint16 *other_min_add = std::min_element(other_tensor, other_tensor + (width * height - 1));
+        double other_max = (double) *other_max_add;
+        double other_min = (double) *other_min_add;
+        double other_range = other_max - other_min;
+
+  //      std::printf("%f, %f, %f\n", *max_add, *min_add, range);
+        std::printf("%f, %f, %f\n", max, min, range);
+        for (int i = 0; i < width * height; i++) {
+          //tensor[i] = (range * ((double) other_tensor[i] / 65535.0)) + min;
+          tensor[i] = (range * (((double) other_tensor[i] - min) / other_range)) + min;
+        }
+        tensor_tif.write("Pics/tensor4.tif", tensor, true);
+        */
+
+        double *tmp = new double[width*height];
+        for(int i=0; i<width*height; i++)
+          tmp[i] = (tensor[i]>0) ? tensor[i] : 0;
+        double *tmpMed = medFilter(tmp, width, height, false);
+        for(int i=0; i<width*height; i++)
+          tensor[i] = exp(-10*tmpMed[i]);
+
+        tensor_tif.write("Pics/tensor5.tif", tensor, true);
+
+        delete[] tmp;
+        delete[] tmpMed;
+
+        return tensor;
       }
-      delete[] medFilteredImage;
-      
-      for(int i=0; i<width*height; i++)
-        tensor[i] = exp(-k*sqrt(tensor[i]));
-      
-      tensor = medFilter(tensor, width, height, true);
-      tensor = lapFilter(tensor, width, height, true);
-
-      double *tmp = new double[width*height];
-      for(int i=0; i<width*height; i++)
-        tmp[i] = (tensor[i]>0) ? tensor[i] : 0;
-      double *tmpMed = medFilter(tmp, width, height, false);
-      for(int i=0; i<width*height; i++)
-        tensor[i] = exp(-10*tmpMed[i]);
-
-      delete[] tmp;
-      delete[] tmpMed;
-
-      return tensor;
-    }
 
 
 
- public:
-   
-  double *nonlinearIso(vector<double *> images, double dt, int iterations, int width, int height) {
-    vector<double *> diffImages;
-    int numImages = images.size();
+   public:
+     
+    double *nonlinearIso(vector<double *> images, double dt, int iterations, int width, int height) {
+      vector<double *> diffImages;
+      int numImages = images.size();
 
-    for(int i=0; i<numImages; i++)
-      diffImages.push_back(medFilter(images[i], width, height, false));
-      
-//    double *diffTens = new double[width*height];
-    for(int t = 0; t < iterations; t++){
+      for(int i=0; i<numImages; i++)
+        diffImages.push_back(medFilter(images[i], width, height, false));
+        
+      QTiffIO diffTens_tif;
+      diffTens_tif.set_dimension(width, height);
+      char buffer[80];
+  //    double *diffTens = new double[width*height];
+      for(int t = 0; t < iterations; t++){
       // One leak here
       double *diffTens = diffusionTensor(diffImages, width, height, 0.08+t/(12*iterations), (t%2==0)?true:false);
       for(int k = 0; k < numImages; k++) {
         //diffImages[k] = aosiso(images[k], diffTens, dt, width, height, diffImages[k]);
         aosiso(images[k], diffTens, dt, width, height, diffImages[k]);
       }
+      sprintf(buffer, "Pics/difftens_iter_%d.tif", t);
+      diffTens_tif.write(buffer, diffTens, true);
       delete[] diffTens;
     }
 

@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
   
   if (argc <= 1) {
     std::printf("%s\n", "Pics/20um_97_16bit.tif");
-    tif = TIFFOpen("Pics/20um_97_16bit.tif", "r");
+    tif = TIFFOpen("Pics/Pt_94kx_Conical_20um_100_16bit.tif", "r");
   } 
   else {
     std::printf("%s\n", argv[1]);
@@ -86,7 +86,8 @@ int main(int argc, char **argv) {
 
 
 //    double *image_processed = image_scaled;
-  double scale = 700/sqrt((double)width*height);
+//  double scale = 700/sqrt((double)width*height);
+  double scale = 1;
   double *image_processed = algorithm(1, image_scaled, width, height, scale);
 
   int width_out = scale * width;

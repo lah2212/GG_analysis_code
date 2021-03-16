@@ -9,6 +9,7 @@
 #include "thresholdParameters.h"
 #include "interpolation.h"
 #include <vector>
+//#include "tifimgio.cpp"
 using namespace std;
 
 //Defined function round but there is a function round in cmath
@@ -137,6 +138,10 @@ double *algorithm(int numImages, double *image, int width, int height, double sc
 //  printf("Binary Denoising Image...\n");
   double *denoisedImage = m->binaryDenoise(thresholdedImage, width, height, firstDenoiseThresh, 2);
   delete[] thresholdedImage;
+
+  QTiffIO tifio;
+  tifio.set_dimension(width, height);
+  tifio.write("binary_denoise.tif", denoisedImage, true);
 
   printf("Dilating Image...\n");
   double *dilatedImage = m->dilate(denoisedImage, width, height);

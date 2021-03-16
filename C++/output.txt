@@ -1,0 +1,56 @@
+double *diffusionTensor(vector<double *> images, int width, int height, double k, bool filterFirst) {
+  double *tensor = new double[width*height];
+  for(int i = 0; i < width * height; i++)
+    tensor[i] = 0;
+
+  double *medFilteredImage;
+  for(int imageNum=0; imageNum<images.size(); imageNum++) {
+    if(filterFirst)
+      medFilteredImage = medFilter(images[imageNum], width, height, false);
+    else {
+      medFilteredImage = new double[width*height];
+      for(int i=0; i<width*height; i++)
+        medFilteredImage[i] = images[imageNum][i];
+//         delete[] medFilteredImage;
+//         double *medFilteredImage = copy(images[imageNum], width, height);
+    }
+
+    for(int i=0; i<width; i++)
+      for(int j=0; j<height; j++)
+        tensor[j*width+i] += pow(sqrt(pow(dx(medFilteredImage, i, j, width, height), 2) + pow(dy(medFilteredImage, i, j, width, height), 2)), 2);
+  }
+  delete[] medFilteredImage;
+
+  
+  QTiffIO tensor_tif;
+  tensor_tif.set_dimension(width, height);
+
+  tensor_tif.write("Pics/tensor0.tif", tensor, true);
+  
+  for(int i=0; i<width*height; i++)
+    tensor[i] = exp(-k*sqrt(tensor[i]));
+
+  tensor_tif.write("Pics/tensor2.tif", tensor, true);
+  
+  tensor = medFilter(tensor, width, height, true);
+
+  tensor_tif.write("Pics/tensor3.tif", tensor, true);
+  
+  tensor = lapFilter(tensor, width, height, true);
+
+  tensor_tif.write("Pics/tensor4.tif", tensor, true);
+
+  double *tmp = new double[width*height];
+  for(int i=0; i<width*height; i++)
+    tmp[i] = (tensor[i]>0) ? tensor[i] : 0;
+  double *tmpMed = medFilter(tmp, width, height, false);
+  for(int i=0; i<width*height; i++)
+    tensor[i] = exp(-10*tmpMed[i]);
+
+  tensor_tif.write("Pics/tensor5.tif", tensor, true);
+
+  delete[] tmp;
+  delete[] tmpMed;
+
+  return tensor;
+}
