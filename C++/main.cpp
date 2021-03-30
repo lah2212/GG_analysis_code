@@ -86,9 +86,11 @@ int main(int argc, char **argv) {
 
 
 //    double *image_processed = image_scaled;
-//  double scale = 700/sqrt((double)width*height);
-  double scale = 1;
-  double *image_processed = algorithm(1, image_scaled, width, height, scale);
+  double *image_stack[1];
+  image_stack[0] = image_scaled;
+  double scale = 700/sqrt((double)width*height);
+//  double scale = 1;
+  double *image_processed = algorithm(1, image_stack, width, height, scale);
 
   int width_out = scale * width;
   int height_out = scale * height;

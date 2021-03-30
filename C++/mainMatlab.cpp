@@ -95,19 +95,17 @@ double *resize(double *image, int width, int height, double scale) {
 
 //Change to MexFunction
 //void mexFunction(int nlhs, mxArray* plhs[], int nrhs, mxArray* prhs[])
-double *algorithm(int numImages, double *image, int width, int height, double scale) { 
+double *algorithm(int numImages, double **images, int width, int height, double scale) { 
   vector<double *> imageSet;
 //  double scale = ;
 //  double scale = 700/sqrt((double)width*height);
   printf("Scale: %f \t Width: %d \t Height: %d\n", scale, int(scale*width), int(scale*height));
-  imageSet.push_back(resize(image, width, height, scale));
-  /*
+//  imageSet.push_back(resize(image, width, height, scale));
   for(int i=0; i<numImages; i++){
-    double *in = normalizeRepresentationIn(images, width, height);
-    imageSet.push_back(resize(in, width, height, scale));
-    delete[] in;
+//    double *in = normalizeRepresentationIn(images, width, height);
+    imageSet.push_back(resize(images[i], width, height, scale));
+//    delete[] in;
   }
-  */
 
   int iterations = 5;
   width = roundd(width*scale);
