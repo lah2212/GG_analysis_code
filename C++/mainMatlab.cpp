@@ -127,20 +127,25 @@ double *algorithm(int numImages, double **images, int width, int height, double 
     tmp[i] = 1-edges[i];
   delete[] edges;
 
+  QTiffIO tifio;
+  tifio.set_dimension(width, height);
+  tifio.write("edges_tmp.tif", tmp, true);
+
   Morphology *m = new Morphology();
   double *thresholdedImage = m->doubleThreshold(tmp, tps->lowThreshold(), tps->highThreshold(), width, height);
   delete tps;
   delete[] tmp;
+
+  tifio.write("double_threshold.tif", thresholdedImage, true);
 
   int firstDenoiseThresh = roundd(width*height/5000);
 //  printf("Binary Denoising Image...\n");
   double *denoisedImage = m->binaryDenoise(thresholdedImage, width, height, firstDenoiseThresh, 2);
   delete[] thresholdedImage;
 
-  QTiffIO tifio;
-  tifio.set_dimension(width, height);
   tifio.write("binary_denoise.tif", denoisedImage, true);
 
+//  exit(0);
   printf("Dilating Image...\n");
   double *dilatedImage = m->dilate(denoisedImage, width, height);
   delete[] denoisedImage;

@@ -12,19 +12,22 @@
 
 int main(int argc, char **argv) {
   const int NUM_IMAGES = 5;
+//  const double SCALE = 700.0/2048.0;
   const double SCALE = 1;
-  //const double SCALE = 700/sqrt((double)width*height);
+//  const double SCALE = 700/sqrt(4096.0 * 4096.0);
   
   double *image_stack[NUM_IMAGES];
   QTiffIO tifio;
   uint32 width, height;
 
+//  char* fnames[1] = { "Pics/STEM/Pt170_STEM_225kX_C2(100)_CL205mm_06.tif" };
+
   char* fnames[5] = {
-        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_96_16bit.tif",
-        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_97_16bit.tif",
-        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_98_16bit.tif",
-        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_99_16bit.tif",
-        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_100_16bit.tif"};
+        "Pics/TEM/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_96_16bit.tif",
+        "Pics/TEM/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_97_16bit.tif",
+        "Pics/TEM/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_98_16bit.tif",
+        "Pics/TEM/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_99_16bit.tif",
+        "Pics/TEM/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_100_16bit.tif"};
 
   for(int i = 0; i < NUM_IMAGES; i++) {
     std::printf("Opening %s\n", fnames[i]);
@@ -63,7 +66,7 @@ int main(int argc, char **argv) {
   int height_out = SCALE * height;
 
   tifio.set_dimension(width_out, height_out);
-  tifio.write("new.tif", image_processed, true);
+  tifio.write("finalskel.tif", image_processed, true);
 
   return 0;
 }

@@ -36,6 +36,7 @@ class QTiffIO {
 
       if (tif) {
         uint16 nsamples;
+        uint16 nbits;
         uint32 config;
         fetched = true;
 
@@ -43,6 +44,7 @@ class QTiffIO {
         TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &height);
         TIFFGetField(tif, TIFFTAG_PLANARCONFIG, &config);
         TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, &nsamples);
+        TIFFGetField(tif, TIFFTAG_BITSPERSAMPLE, &nbits);
         if (verbose) {
           std::printf("Opening Tiff File...\n");
           std::printf("Samples: %d\n", nsamples);
@@ -50,25 +52,48 @@ class QTiffIO {
         }
 
         image = new uint16[width * height];
-        uint16 *buf = (uint16 *) _TIFFmalloc(TIFFScanlineSize(tif));
-        uint16 *data;
+        if (nbits == 16) {
+          uint16 *buf = (uint16 *) _TIFFmalloc(TIFFScanlineSize(tif));
+          uint16 *data;
 
-        for (uint32 row = 0; row < height; row++) {
-          if (TIFFReadScanline(tif, buf, row)) {
-            data = (uint16 *) buf;
-            for (int i = 0; i < width; i++) {
-              image[(width * row) + i] = data[i];
+          for (uint32 row = 0; row < height; row++) {
+            if (TIFFReadScanline(tif, buf, row)) {
+              data = (uint16 *) buf;
+              for (int i = 0; i < width; i++) {
+                image[(width * row) + i] = data[i];
+              }
+            }
+            else {
+              std::printf("Couldn't read scanlines\n");
+              exit(1);
             }
           }
-          else {
-            std::printf("Couldn't read scanlines\n");
-            exit(1);
-          }
-        }
 
-        _TIFFfree(buf);
-        TIFFClose(tif);
-        return image;
+          _TIFFfree(buf);
+          TIFFClose(tif);
+          return image;
+        }
+        else if (nbits == 8) {
+          uint8 *buf = (uint8 *) _TIFFmalloc(TIFFScanlineSize(tif));
+          uint8 *data;
+
+          for (uint32 row = 0; row < height; row++) {
+            if (TIFFReadScanline(tif, buf, row)) {
+              data = (uint8 *) buf;
+              for (int i = 0; i < width; i++) {
+                image[(width * row) + i] = 257 * data[i];
+              }
+            }
+            else {
+              std::printf("Couldn't read scanlines\n");
+              exit(1);
+            }
+          }
+
+          _TIFFfree(buf);
+          TIFFClose(tif);
+          return image;
+        }
       } 
       else {
         std::printf("Could not open tiff image");

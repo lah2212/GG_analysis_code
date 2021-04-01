@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
   
   if (argc <= 1) {
     std::printf("%s\n", "Pics/20um_97_16bit.tif");
-    tif = TIFFOpen("Pics/Pt_94kx_Conical_20um_100_16bit.tif", "r");
+    tif = TIFFOpen("Pics/TEM/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_100_16bit.tif", "r");
   } 
   else {
     std::printf("%s\n", argv[1]);

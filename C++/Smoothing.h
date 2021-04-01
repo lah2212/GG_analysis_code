@@ -316,7 +316,7 @@ class NonlinearIso{
         QTiffIO tensor_tif;
         tensor_tif.set_dimension(width, height);
 
-        tensor_tif.write("Pics/tensor0.tif", tensor, true);
+        tensor_tif.write("Pics/tensor1.tif", tensor, true);
         
         for(int i=0; i<width*height; i++)
           tensor[i] = exp(-k*sqrt(tensor[i]));
@@ -359,36 +359,49 @@ class NonlinearIso{
         diffImages.push_back(medFilter(images[i], width, height, false));
         
       char buffer[80];
+      // The original k_b = 0.08 and k_m = 1/(12 * iterations)
+      double k_b = 0.08;
+      double k_m = 1/(iterations * 12);
+      QTiffIO smoothed_tif;
       for(int t = 0; t < iterations; t++){
-        double *diffTens = diffusionTensor(diffImages, width, height, 0.08+t/(12*iterations), (t%2==0)?true:false);
+        double *diffTens = diffusionTensor(diffImages, width, height, 
+                k_b + (k_m * t), (t%2==0)?true:false);
         for(int k = 0; k < numImages; k++) {
           //diffImages[k] = aosiso(images[k], diffTens, dt, width, height, diffImages[k]);
           aosiso(images[k], diffTens, dt, width, height, diffImages[k]);
+
+          smoothed_tif.set_dimension(width, height);
+          char smoothed_fname[20] = "smoothed_img_yx.tif";
+          smoothed_fname[13] = '0' + t;
+          smoothed_fname[14] = '0' + k;
+          smoothed_tif.write(smoothed_fname, diffImages[k], true);
         }
         sprintf(buffer, "Pics/difftens_iter_%d.tif", t);
         delete[] diffTens;
       }
 
-    double *diffTens = diffusionTensor(diffImages, width, height, 0.1633, false, true);
+      // 0.1633
+      double *diffTens = diffusionTensor(diffImages, width, height, 
+              k_b + (k_m * iterations), false, true);
 
-    /*
-    diffTens = medFilter(diffTens, width, height, true);
-    diffTens = lapFilter(diffTens, width, height, true);
-    double *tmp = new double[width*height];
-    for(int i=0; i<width*height; i++)
-        tmp[i] = (diffTens[i]>0) ? diffTens[i] : 0;
-    double *tmpMed = medFilter(tmp, width, height, false);
-    for(int i=0; i<width*height; i++)
-        diffTens[i] = exp(-10*tmpMed[i]);
-    
-    delete[] tmp;
-    delete[] tmpMed;
-      */
+      /*
+      diffTens = medFilter(diffTens, width, height, true);
+      diffTens = lapFilter(diffTens, width, height, true);
+      double *tmp = new double[width*height];
+      for(int i=0; i<width*height; i++)
+          tmp[i] = (diffTens[i]>0) ? diffTens[i] : 0;
+      double *tmpMed = medFilter(tmp, width, height, false);
+      for(int i=0; i<width*height; i++)
+          diffTens[i] = exp(-10*tmpMed[i]);
+      
+      delete[] tmp;
+      delete[] tmpMed;
+        */
 
-    for(int i = 0; i < numImages; i++)
-      delete[] diffImages[i];
+      for(int i = 0; i < numImages; i++)
+        delete[] diffImages[i];
 
-    return diffTens;
-  }
+      return diffTens;
+    }
   
 };

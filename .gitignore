@@ -1,6 +1,7 @@
 Python/Bundle(temp).tif
 Python/Merged_image(temp).npy
 **/Pics/**
+**/Results/**
 .DS_Store
 **/*.dSYM/**
 *.png
