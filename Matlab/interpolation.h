@@ -26,9 +26,8 @@
 #include <math.h>
 #include <stdlib.h>
 #include <vector>
+
 using namespace std;
-
-
 
 class Interpolation{
  private:
@@ -147,28 +146,28 @@ class Interpolation{
   
   double rayDiff(Ray *r1, Ray *r2){
     double absAngle1 = absoluteAngle(r1), absAngle2 = absoluteAngle(r2);
-    return min(abs(absAngle1 - absAngle2), abs(2*pi - abs(absAngle1 - absAngle2)));
+    return min(fabs(absAngle1 - absAngle2), fabs(2*pi - fabs(absAngle1 - absAngle2)));
   }
 
 
 
   Ray *rayComposition(Ray *r1, Ray *r2){
     double absAngle, absAngle1 = absoluteAngle(r1), absAngle2 = absoluteAngle(r2);
-    double theta = min(abs(absAngle1 - absAngle2), 2*pi - abs(absAngle1 - absAngle2));
-    if(theta == abs(absAngle1 - absAngle2))
+    double theta = min(fabs(absAngle1 - absAngle2), 2*pi - fabs(absAngle1 - absAngle2));
+    if(theta == fabs(absAngle1 - absAngle2))
       if(max(absAngle1, absAngle2) < pi)
-	absAngle = max(absAngle1, absAngle2) + pi - theta/2;
+        absAngle = max(absAngle1, absAngle2) + pi - theta/2;
       else
-	absAngle = max(absAngle1, absAngle2) - pi - theta/2;
+        absAngle = max(absAngle1, absAngle2) - pi - theta/2;
     else
       absAngle = max(absAngle1, absAngle2) - pi + theta/2;
     
     
     while(absAngle < 0 || absAngle > 2*pi){
       if(absAngle<0)
-	absAngle+=2*pi;
+        absAngle+=2*pi;
       if(absAngle>2*pi)
-	absAngle-=2*pi;
+        absAngle-=2*pi;
     }
     
     Point *quad;

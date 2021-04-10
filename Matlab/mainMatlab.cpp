@@ -1,7 +1,3 @@
-
-//Fixed Error: In function 'int round(double)'
-//Also Error in declaration of MexFunction
-
 #include <stdio.h>
 #include <iostream>
 #include "Smoothing.h"
@@ -72,7 +68,7 @@ double *resize(double *image, int width, int height, double scale){
 
 //Change to MexFunction
 //void mexFunction(int nlhs, mxArray* plhs[], int nrhs, mxArray* prhs[])
-void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]){ 
+void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) { 
   printf("Using %d Images\n", nrhs);
   int width = mxGetN(prhs[0]);
   int height = mxGetM(prhs[0]);  

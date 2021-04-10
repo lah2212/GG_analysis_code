@@ -68,7 +68,7 @@ class Morphology{
   double myAtanDiff(double x1, double x2){
     double tmp1 = atan(x1);
     double tmp2 = atan(x2);
-    return min(abs(tmp1-tmp2), 2*pi-abs(tmp1-tmp2));
+    return min(fabs(tmp1-tmp2), 2*pi-fabs(tmp1-tmp2));
   }
   
   

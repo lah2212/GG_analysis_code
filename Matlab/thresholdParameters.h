@@ -20,6 +20,8 @@ class thresholdParameters{
   }
   
   double highThreshold(){
-    return 3.6*std + 1.4*(1-mean) - 0.213;
+    // return 3.6*std + 1.4*(1-mean) - 0.213;
+    // This (^) was original, this (v) is just me testing
+    return 3.6*std + 1.4*(1-mean) - 0.4;
   }
 };
