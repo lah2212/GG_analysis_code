@@ -16,12 +16,14 @@ class thresholdParameters{
     std = sqrt(std/(double)(width*height));
   }
   double lowThreshold(){
-    return 2.44*std + 0.99*mean - 0.96;
+    //return 2.44*std + 0.99*mean - 0.96;
+    return mean + std;
   }
   
   double highThreshold(){
-    // return 3.6*std + 1.4*(1-mean) - 0.213;
+    //return 3.6*std + 1.4*(1-mean) - 0.213;
     // This (^) was original, this (v) is just me testing
-    return 3.6*std + 1.4*(1-mean) - 0.4;
+    return mean + 2 * std;
+//    return 3.6*std + 1.4*(1-mean) - 0.4;
   }
 };

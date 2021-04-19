@@ -1,1 +1,1 @@
-mex edgeProcessing.cpp -I/usr/local/include -L/usr/local/lib -ltiff -lm
+mex edgeProcessing.cpp -I/usr/include -L/usr/lib -ltiff -lm

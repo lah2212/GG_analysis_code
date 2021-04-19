@@ -25,6 +25,7 @@ function [u,q] = AdaptiveSmoothingUpwind(f, lambda, sigma, q)
   u = f;
   tau = 1/32;          %step size
   scale = .05;        %scale for Gaussian
+%  scale = .09;        %scale for Gaussian
   k = .0075;          %parameter edge detector
   [M,N] = size(f);    %M,N = size
 

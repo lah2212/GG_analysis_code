@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <string>
+#include <cstring>
 #include "tiffio.h"
 
 class QTiffIO {
@@ -174,7 +175,7 @@ class QTiffIO {
         //Now writing image to the file one strip at a time
         for (uint32 row = 0; row < height_out; row++) {
   //        memcpy(buf, &image_out[(height_out - row - 1) * linebytes], linebytes);    // check the index here, and figure out why not using h*linebytes
-          memcpy(buf, &image_out[(row) * width_out], linebytes);    // check the index here, and figure out why not using h*linebytes
+          std::memcpy(buf, &image_out[(row) * width_out], linebytes);    // check the index here, and figure out why not using h*linebytes
           if (TIFFWriteScanline(out, buf, row, 0) < 0)
             break;
         }
