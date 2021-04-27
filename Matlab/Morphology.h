@@ -416,6 +416,8 @@ class Morphology{
 
   double *dilate(double *image, int width, int height){
     double *dilatedImage = new double[width * height];
+    for (int i = 0; i < width*height; i++)
+      dilatedImage[i] = 0;
     for(int i=0; i<width*height; i++)
       image[i] = (image[i]!=0) ? 1 : 0;
     for (int i = 1; i < width - 1; i++)
@@ -825,20 +827,22 @@ function [c,lut] = thin(a)
 
 
   double *prune(double *skel, int threshold, int width, int height){
-    printf("Pruning Image...\n");
-  
-//    printf("Testpoint0\n");
+    printf("Testpoint0\n");
     double *clippedImage = new double[width*height];
     
     for(int i=0; i<width*height; i++)
-      clippedImage[i]=skel[i];
+      clippedImage[i] = skel[i];
   
+    printf("Testpoint0\n");
     cornerDetector *cd = new cornerDetector();
     vector<Point *> corners = cd->detectCorners(skel, width, height);
+    printf("Testpoint1\n");
     endDetector *ed = new endDetector();
     vector<Point *> ends = ed->detectEnds(skel, width, height);
+    printf("Testpoint2\n");
     tripleDetector *td = new tripleDetector();
     vector<Point *> trips = td->detectTriples(skel, width, height);
+    printf("Testpoint3\n");
     
     bool *interestPts = new bool[width*height];
     for(int i=0; i<width*height; i++)
@@ -848,7 +852,6 @@ function [c,lut] = thin(a)
       interestPts[tmp->y*width+tmp->x]=true;
     }
   
-//    printf("Testpoint1\n");
     for(int i=0; i<ends.size(); i++){
       Point *tmp = ends[i];
       bool done=false;

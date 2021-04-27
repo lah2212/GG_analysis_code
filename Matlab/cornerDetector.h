@@ -91,24 +91,24 @@ class cornerDetector{
     bool breakLoops=false;
     for(int m=x-1; m<=x+1; m++) {
       for(int n=y-1; n<=y+1; n++) {
-	if((m==i && n==j) || (m==x && n==y) || m<0 || m>=width || n<0 || n>=height)
-	  continue;
-	if(skel[n*width+m]==0)
-	  continue;
-	if(elementOf(pointList, new Point(m, n)))
-	  continue;
-	if(elementOfTrip(trips, new Point(m, n), 1)){
-	  tripPoint = new Point(m, n);
-	  breakLoops=true;
-	  break;
-	}
-	point = new Point(m, n);
-	pointList.push_back(new Point(point));
-	breakLoops=true;
-	break;
+        if((m==i && n==j) || (m==x && n==y) || m<0 || m>=width || n<0 || n>=height)
+          continue;
+        if(skel[n*width+m]==0)
+          continue;
+        if(elementOf(pointList, new Point(m, n)))
+          continue;
+        if(elementOfTrip(trips, new Point(m, n), 1)){
+          tripPoint = new Point(m, n);
+          breakLoops=true;
+          break;
+        }
+        point = new Point(m, n);
+        pointList.push_back(new Point(point));
+        breakLoops=true;
+        break;
       }
       if(breakLoops)
-	break;
+        break;
     }
   }
   int xSum=0, ySum=0, x2=0, xy=0;
@@ -133,13 +133,13 @@ class cornerDetector{
     xy+=((Point *)pointList[i])->x * ((Point *)pointList[i])->y;
     if(i!=n-1){
       if( ( (int)((Point *)pointList[i])->x - (int)((Point *)pointList[i+1])->x) < 0)
-	posX++;
+        posX++;
       else if( ( (int)((Point *)pointList[i])->x - (int)((Point *)pointList[i+1])->x) > 0)
-	negX++;
+        negX++;
       if( ( (int)((Point *)pointList[i])->y - (int)((Point *)pointList[i+1])->y) < 0)
-	posY++;
+        posY++;
       else if( ( (int)((Point *)pointList[i])->y - (int)((Point *)pointList[i+1])->y) > 0)
-	negY++;
+        negY++;
     }
   }
   xDirection = (negX>posX) ? -1 : 1;
@@ -181,43 +181,45 @@ class cornerDetector{
     vector<Point *> corners;
     vector<PointDiff *> possibleCorners;
     vector<Point *> trips;
-    for(int i=0; i<width; i++)
-      for(int j=0; j<height; j++){
-	if(skeleton[j*width+i]!=0){
-	  vector<Point *> neighbors;
-	  for(int m=-1; m<=1; m++)
-	    for(int n=-1; n<=1; n++){
-	      int x = i+m, y = j+n;
-	      if( (x==i && y==j) || x<0 || x>=width || y<0 || y>=height)
-		continue;
-	      if(skeleton[y*width+x] != 0)
-		neighbors.push_back(new Point(x, y));
-	    }
-	  int nghSize = neighbors.size();
-	  if(nghSize>=2){
-	    Point *ngh1 = new Point((Point *)neighbors[0]);
-	    Point *ngh2=NULL;
-	    int numClusters=nghSize;
-	    for(int k=0; k<nghSize; k++){
-	      Point *pt1 = new Point((Point *)neighbors[k]);
-	      if(pt1->distanceFrom(ngh1) > 1)
-		ngh2 = new Point(pt1);
-	      for(int h=k; h<nghSize; h++){
-		Point *pt2 = new Point((Point *)neighbors[h]);
-		if(pt1->distanceFrom(pt2)==1)
-		  numClusters--;
-	      }
-	    }
-	    if(numClusters==2 && ngh2!=NULL)
-	      possibleCorners.push_back(new PointDiff(new Point(i, j), 0, new Point(ngh1), new Point(ngh2)));
-	    else if(numClusters>2)
-	      trips.push_back(new Point(i, j));
-	  }
-	  
-	}
+    for(int i=0; i<width; i++) {
+      for(int j=0; j<height; j++) {
+        if(skeleton[j*width+i]!=0) {
+          vector<Point *> neighbors;
+          for(int m=-1; m<=1; m++) {
+            for(int n=-1; n<=1; n++) {
+              int x = i+m, y = j+n;
+              if( (x==i && y==j) || x<0 || x>=width || y<0 || y>=height)
+                continue;
+              if(skeleton[y*width+x] != 0)
+                neighbors.push_back(new Point(x, y));
+            }
+          }
+          int nghSize = neighbors.size();
+          if(nghSize >= 2) {
+            Point *ngh1 = new Point((Point *)neighbors[0]);
+            Point *ngh2 = NULL;
+            int numClusters = nghSize;
+            for(int k=0; k<nghSize; k++){
+              Point *pt1 = new Point((Point *)neighbors[k]);
+              if(pt1->distanceFrom(ngh1) > 1)
+                ngh2 = new Point(pt1);
+              for(int h=k; h<nghSize; h++){
+                Point *pt2 = new Point((Point *)neighbors[h]);
+                if(pt1->distanceFrom(pt2)==1)
+                  numClusters--;
+              }
+            }
+            if(numClusters==2 && ngh2!=NULL)
+              possibleCorners.push_back(new PointDiff(new Point(i, j), 0, new Point(ngh1), new Point(ngh2)));
+            else if(numClusters>2)
+              trips.push_back(new Point(i, j));
+          }
+          
+        }
       }
-    
-    int n=possibleCorners.size();
+    }
+      
+    int n = possibleCorners.size();
     vector<PointDiff *> refinedCornerList;
         
     for(int i=0; i<n; i++){
@@ -227,18 +229,19 @@ class cornerDetector{
       int x = p1->x;
       int y = p1->y;
       if(elementOfTrip(trips, new Point(x,y), 2))
-	continue;
+        continue;
       Ray *ray1 = ray(ngh1, skeleton, x, y, width, height, trips);
       Ray *ray2 = ray(ngh2, skeleton, x, y, width, height, trips);
       double angle = rayDiff(ray1, ray2);
       if(angle >= cornerThresh || angle <= pi-cornerThresh)
-	continue;
+        continue;
       refinedCornerList.push_back(new PointDiff(new Point(x, y), angle));
       /*************************************/
       //corners.push_back(new Point(x, y));
       /*************************************/
     }
-
+    printf("tp0.1");
+    
     double *cornerAngles = new double[width*height];
     bool *used = new bool[width*height];
     for(int i=0; i<width*height; i++){
@@ -250,50 +253,49 @@ class cornerDetector{
       Point *pt = tmp->p;
       cornerAngles[pt->y*width+pt->x] = (double)tmp->angle;
     }
-    for(int i=0; i<width; i++)
-      for(int j=0; j<height; j++){
-	if(cornerAngles[j*width+i]!=0 && !used[j*width+i]){
-	  Point *nextPoint = new Point(i, j);
-	  vector<PointDiff *> pointCluster;
-	  while(nextPoint != NULL){
-	    int x=nextPoint->x, y=nextPoint->y;
-	    nextPoint=NULL;
-	    used[y*width+x]=true;
-	    bool breakLoops=false;
-	    for(int m=x-clusterThresh; m<=x+clusterThresh; m++){
-	      for(int n=y-clusterThresh; n<=y+clusterThresh; n++){
-		if((m==x && n==y) || m<0 || n<0 || m>=width || n>=height)
-		  continue;
-		if(cornerAngles[n*width+m]!=0 && !used[n*width+m]){
-		  pointCluster.push_back(new PointDiff(new Point(m, n), cornerAngles[n*width+m]));
-		  nextPoint = new Point(m, n);
-		  breakLoops=true;
-		}
-		used[n*width+m]=true;
-		if(breakLoops)
-		  break;
-	      }
-	      if(breakLoops)
-		break;
-	    }
-	  }
-	  double minAngle=10000000;
-	  Point *minPoint;
-	  for(int k=0; k<pointCluster.size(); k++){
-	    PointDiff *tmpDiff = pointCluster[k];
-	    if(tmpDiff->angle < minAngle){
-	      minAngle = tmpDiff->angle;
-	      minPoint = new Point(tmpDiff->p);
-	    }
-	  }
-	  corners.push_back(new Point(minPoint));
-	}
+    for(int i=0; i<width; i++) {
+      for(int j=0; j<height; j++) {
+        if(cornerAngles[j*width+i]!=0 && !used[j*width+i]){
+          Point *nextPoint = new Point(i, j);
+          vector<PointDiff *> pointCluster;
+          while(nextPoint != NULL){
+            int x = nextPoint->x;
+            int y = nextPoint->y;
+            delete nextPoint;
+            nextPoint = NULL;
+            used[y*width+x]=true;
+            bool breakLoops=false;
+            for(int m=x-clusterThresh; m<=x+clusterThresh; m++){
+              for(int n=y-clusterThresh; n<=y+clusterThresh; n++){
+                if((m == x && n == y) || m<0 || n<0 || m>=width || n>=height)
+                  continue;
+                if(cornerAngles[n*width+m]!=0 && !used[n*width+m]){
+                  pointCluster.push_back(new PointDiff(new Point(m, n), cornerAngles[n*width+m]));
+                  nextPoint = new Point(m, n);
+                  breakLoops=true;
+                }
+                used[n*width+m]=true;
+                if(breakLoops)
+                  break;
+              }
+              if(breakLoops)
+                break;
+            }
+          }
+          double minAngle=10000000;
+          Point *minPoint;
+          for(int k=0; k<pointCluster.size(); k++){
+            PointDiff *tmpDiff = pointCluster[k];
+            if(tmpDiff->angle < minAngle){
+              minAngle = tmpDiff->angle;
+              minPoint = new Point(tmpDiff->p);
+            }
+          }
+          corners.push_back(new Point(minPoint));
+        }
       }
-	  
-					 
-    
+    }
 
-    
     return corners;
   }
   

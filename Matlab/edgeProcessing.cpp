@@ -55,14 +55,12 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) {
 
   tifio.write("Pics/c_2_denoise.tif", denoisedImage, true);
 
-  double *dilatedImage = denoisedImage;
-/*
+  //double *dilatedImage = denoisedImage;
   printf("Dilating Image...\n");
   double *dilatedImage = m->dilate(denoisedImage, width, height);
   delete[] denoisedImage;
 
   tifio.write("Pics/c_3_dilated.tif", dilatedImage, true);
-*/
 
   printf("Thinning Image...\n");
   double *thinnedImage = m->thin(dilatedImage, width, height);
