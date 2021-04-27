@@ -66,7 +66,6 @@ function [u,q] = AdaptiveSmoothingUpwind(f, lambda, sigma, q)
         end
     end
 
-
     %calculate q and q*
     q1 = zeros(M+2,N+2);
     q1(2:M+1,2:N+1) = conv;

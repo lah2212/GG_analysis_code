@@ -15,15 +15,16 @@ function nchannel_adaptive(varargin)
     mkdir(dir_name);
   end
 
-  % fnames = [ "Pics/Pt170_STEM_160kX_C2(100)_CL205mm_05_noscale.tif"];
-  fnames = [ "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_99.tif",
-        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_96.tif",
-        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_97.tif",
-        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_98.tif",
-        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_100.tif" ];
+  tic
+  fnames = [ "Pics/Pt170_STEM_110kX_C2(100)_CL205mm_03_noscale.tif"];
+%  fnames = [ "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_99.tif",
+%        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_96.tif",
+%        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_97.tif",
+%        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_98.tif",
+%        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_100.tif" ];
   NUM_IMAGES = length(fnames);
   %SCALE_IMG = 1;
-  SCALE_IMG = 700/4096;
+  SCALE_IMG = 700/2048;
   imgs = [];
 
   for i = 1:NUM_IMAGES
@@ -82,39 +83,36 @@ function nchannel_adaptive(varargin)
           end
       end
 
-      %calculate q and q*
-      q1 = zeros(M+2,N+2);
-      q1(2:M+1,2:N+1) = conv;
-      gradq1 = zeros(M+2,N+2,2);
-
-      % gradq1(:,:,1) is the y (row) grad and gradq1(:,:,2) is the x (column) grad 
-      % and magq1 is the magnitude of those gradients
-      gradq1(2:M+1,2:N+1,1) = q1(3:M+2,2:N+1)-q1(1:M,2:N+1);
-      gradq1(2:M+1,2:N+1,2) = q1(2:M+1,3:N+2)-q1(2:M+1,1:N);
-      magq1(:,:) = sqrt(gradq1(:,:,1).^2+gradq1(:,:,2).^2);
+%       lapofgaus = make_lapofgaus(1.4);
+%       magq1 = conv2(conv, lapofgaus);
+      magq1 = find_grad(conv);
 
       % grad_sum(:,:,1) = grad_sum(:,:,1) + gradq1(:,:,1);
       % grad_sum(:,:,2) = grad_sum(:,:,2) + gradq1(:,:,2);
       
       % NORMAL SUM %
-%      grad_sum = grad_sum + magq1;
+      grad_sum = grad_sum + magq1;
       % MAX VALUE %
 %       grad_sum(grad_sum < magq1) = magq1(grad_sum < magq1);
 
       % MIN VALUE %
-      if (i == 1)
-        grad_sum = magq1;
-      else
-        grad_sum(grad_sum > magq1) = magq1(grad_sum > magq1);
-      end
+%      if (i == 1)
+%        grad_sum = magq1;
+%      else
+%        grad_sum(grad_sum > magq1) = magq1(grad_sum > magq1);
+%      end
 
   %    q = q + (1+1./(1+k*magq1.^2));
       imwrite_norm(grad_sum, dir_name + "grad_sum_" + num2str(i));
     end
     % q = q + (1 + 1./(1 + k * (grad_sum(:,:,1).^2 + grad_sum(:,:,2).^2)));
-    % grad_sum = grad_sum ./ NUM_IMAGES;
+    grad_sum = grad_sum ./ NUM_IMAGES;
     q = 1 + 1./(1 + k * grad_sum.^2);
     %q = q/NUM_IMAGES;
+
+%     q_rs = zeros(M + 2, N + 2);
+%     b = (size(q, 1) - (M + 2))/2;
+%     q_rs = q(b + 1:M + b + 2, b + 1:N + b + 2);
 
     imwrite_norm(grad_sum, dir_name + "grad_sum_total");
     imwrite_norm(q, dir_name + "q");
@@ -170,6 +168,8 @@ function nchannel_adaptive(varargin)
   % edges = 1 - tensor(1 + border:M + border, 1 + border:N + border);
   edges = tensor(2 + border:M + border - 1, 2 + border:N + border - 1);
   %edges = (edges - min(min(edges))) * 1/(max(max(edges)) - min(min(edges)));
+
+  toc
 
   % Call algorithm to retrieve skeleton
   tic

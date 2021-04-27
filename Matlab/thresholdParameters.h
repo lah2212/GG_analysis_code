@@ -17,13 +17,13 @@ class thresholdParameters{
   }
   double lowThreshold(){
     //return 2.44*std + 0.99*mean - 0.96;
-    return mean + std;
+    return 1 - mean;
   }
   
   double highThreshold(){
     //return 3.6*std + 1.4*(1-mean) - 0.213;
     // This (^) was original, this (v) is just me testing
-    return mean + 2 * std;
+    return 3 * std + (1 - mean);
 //    return 3.6*std + 1.4*(1-mean) - 0.4;
   }
 };

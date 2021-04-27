@@ -35,7 +35,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) {
   thresholdParameters *tps = new thresholdParameters(edges, width, height);
   double *tmp = new double[width*height];
   for(int i = 0; i < width * height; i++)
-    tmp[i] = 1-edges[i];
+    tmp[i] = 1 - edges[i];
   delete[] edges;
 
   printf("Low Threshold: %f\n", tps->lowThreshold());
@@ -45,7 +45,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) {
   delete tps;
   delete[] tmp;
 
-  tifio.write("Pics/1_threshold.tif", thresholdedImage, true);
+  tifio.write("Pics/c_1_threshold.tif", thresholdedImage, true);
 
   printf("Denoising Image...\n");
   int firstDenoiseThresh = roundd(width*height/5000);
@@ -53,32 +53,22 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) {
   double *denoisedImage = m->binaryDenoise(thresholdedImage, width, height, firstDenoiseThresh, 2);
   delete[] thresholdedImage;
 
-  tifio.write("Pics/2_denoise.tif", denoisedImage, true);
+  tifio.write("Pics/c_2_denoise.tif", denoisedImage, true);
 
   printf("Dilating Image...\n");
   double *dilatedImage = m->dilate(denoisedImage, width, height);
   delete[] denoisedImage;
 
-  tifio.write("Pics/3_dilated.tif", dilatedImage, true);
+  tifio.write("Pics/c_3_dilated.tif", dilatedImage, true);
 
   printf("Thinning Image...\n");
   double *thinnedImage = m->thin(dilatedImage, width, height);
   delete[] dilatedImage;
 //  printf("Detangling Image...\n");
+  tifio.write("Pics/c_4_thinned.tif", thinnedImage, true);
   double *detangledImage = m->detangle(m->detangle(thinnedImage, width, height), width, height);
   delete[] thinnedImage;
 
-  /* temp */
-  double *outImage = normalizeRepresentationOut(detangledImage, width, height);
-  plhs[0] = mxCreateDoubleMatrix(height, width, mxREAL);
-  double *out = mxGetPr(plhs[0]);
-
-  for(int i=0; i<width*height; i++)
-    out[i] = outImage[i];
-
-  delete[] outImage;
-
-  /*
   Interpolation *interp = new Interpolation();
   printf("Interpolating Image...\n");
   double *interpolatedImage = interp->interpolate(detangledImage, width, height);
@@ -112,5 +102,4 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) {
     out[i] = outImage[i];
 
   delete[] outImage;
-  */
 }

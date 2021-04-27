@@ -420,10 +420,10 @@ class Morphology{
       image[i] = (image[i]!=0) ? 1 : 0;
     for (int i = 1; i < width - 1; i++)
       for (int j = 1; j < height - 1; j++)
-	if (image[j * width + i] != 0)
-	  for (int b = -1; b <= 1; b++)
-	    for (int n = -1; n <= 1; n++)
-	      dilatedImage[(j + n) * width + (i + b)] = 1;
+        if (image[j * width + i] != 0)
+          for (int b = -1; b <= 1; b++)
+            for (int n = -1; n <= 1; n++)
+              dilatedImage[(j + n) * width + (i + b)] = 1;
     return dilatedImage;
   }
 
