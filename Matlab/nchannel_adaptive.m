@@ -6,6 +6,7 @@ function nchannel_adaptive(varargin)
     k = varargin{2};
   elseif (nargin > 0)
     dir_name = "Pics/" + varargin{1} + "/";
+    k = 0.0023;
   else
     dir_name = "Pics/results/";
     k = 0.0023;
@@ -16,23 +17,42 @@ function nchannel_adaptive(varargin)
   end
 
   tic
-  fnames = [ "Pics/Pt170_STEM_110kX_C2(100)_CL205mm_03_noscale.tif"];
+%  fnames = [ "Pics/Pt170_STEM_110kX_C2(100)_CL205mm_03_noscale.tif"];
+  fnames = [ 
+      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131600.415DriftCorrected100.png",
+      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131602.422DriftCorrected101.png",
+      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131604.508DriftCorrected102.png",
+      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131606.466DriftCorrected103.png",
+      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131608.481DriftCorrected104.png",
+      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131610.564DriftCorrected105.png",
+      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131612.621DriftCorrected106.png",
+      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131614.559DriftCorrected107.png",
+      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131616.544DriftCorrected108.png"
+        ];
 %  fnames = [ "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_99.tif",
 %        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_96.tif",
 %        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_97.tif",
 %        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_98.tif",
 %        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_100.tif" ];
   NUM_IMAGES = length(fnames);
-  %SCALE_IMG = 1;
-  SCALE_IMG = 700/2048;
+  SCALE_IMG = 1;
   imgs = [];
 
-  for i = 1:NUM_IMAGES
-    tif = Tiff(fnames(i), 'r');
-    img = double(read(tif));
-    range = max(max(img)) - min(min(img)); img_n = (255 / range) * (img - min(min(img)));
-  %  imgs = cat(3, imgs, img_n);
-    imgs = cat(3, imgs, imresize(img_n, SCALE_IMG));
+  if(contains(fnames(1), ".tif"))
+    for i = 1:NUM_IMAGES
+      tif = Tiff(fnames(i), 'r');
+      img = double(read(tif));
+      range = max(max(img)) - min(min(img)); img_n = (255 / range) * (img - min(min(img)));
+    %  imgs = cat(3, imgs, img_n);
+      imgs = cat(3, imgs, imresize(img_n, SCALE_IMG));
+    end
+  else
+    for i = 1:NUM_IMAGES
+      img = double(imread(fnames(i)));
+      range = max(max(img)) - min(min(img)); img_n = (255 / range) * (img - min(min(img)));
+    %  imgs = cat(3, imgs, img_n);
+      imgs = cat(3, imgs, imresize(img_n, SCALE_IMG));
+    end
   end
 
   displayImages = false;

@@ -55,11 +55,14 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) {
 
   tifio.write("Pics/c_2_denoise.tif", denoisedImage, true);
 
+  double *dilatedImage = denoisedImage;
+/*
   printf("Dilating Image...\n");
   double *dilatedImage = m->dilate(denoisedImage, width, height);
   delete[] denoisedImage;
 
   tifio.write("Pics/c_3_dilated.tif", dilatedImage, true);
+*/
 
   printf("Thinning Image...\n");
   double *thinnedImage = m->thin(dilatedImage, width, height);
@@ -69,10 +72,14 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) {
   double *detangledImage = m->detangle(m->detangle(thinnedImage, width, height), width, height);
   delete[] thinnedImage;
 
+  tifio.write("Pics/c_5_detangled.tif", detangledImage, true);
   Interpolation *interp = new Interpolation();
   printf("Interpolating Image...\n");
   double *interpolatedImage = interp->interpolate(detangledImage, width, height);
   delete[] detangledImage;
+
+  tifio.write("Pics/c_6_interpolated.tif", interpolatedImage, true);
+
   int pruneThreshold = roundd(sqrt((double)(width*height))/50.0);
   printf("Pruning Image...\n");
   double *prunedImage = m->prune(interpolatedImage, pruneThreshold, width, height);
