@@ -17,25 +17,40 @@ function nchannel_adaptive(varargin)
   end
 
   tic
-%  fnames = [ "Pics/Pt170_STEM_110kX_C2(100)_CL205mm_03_noscale.tif"];
+%  fnames = [ "Pics/STEM_Pt170/Pt170_STEM_110kX_C2(100)_CL205mm_03_noscale.tif"];
+%  fnames = [
+%    %"Pics/AxonTraining/DriftCorrected/TEM Drift Corrected/20210412T124103.157DriftCorrected291.png"
+%    "Pics/AxonTraining/DriftCorrected/TEM Drift Corrected/20210412T124117.253DriftCorrected0.png"
+%    "Pics/AxonTraining/DriftCorrected/TEM Drift Corrected/20210412T124149.712DriftCorrected80.png"
+%    "Pics/AxonTraining/DriftCorrected/TEM Drift Corrected/20210412T124200.948DriftCorrected100.png"
+%    "Pics/AxonTraining/DriftCorrected/TEM Drift Corrected/20210412T124223.044DriftCorrected155.png"
+%    "Pics/AxonTraining/DriftCorrected/TEM Drift Corrected/20210412T124406.133DriftCorrected400.png"
+%    "Pics/AxonTraining/DriftCorrected/TEM Drift Corrected/20210412T124520.230DriftCorrected573.png"
+%  ];
+
+%  fnames = [ 
+%      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131600.415DriftCorrected100.png",
+%      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131602.422DriftCorrected101.png",
+%      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131604.508DriftCorrected102.png",
+%      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131606.466DriftCorrected103.png",
+%      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131608.481DriftCorrected104.png",
+%      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131610.564DriftCorrected105.png",
+%      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131612.621DriftCorrected106.png",
+%      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131614.559DriftCorrected107.png",
+%      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131616.544DriftCorrected108.png"
+%        ];
+
   fnames = [ 
-      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131600.415DriftCorrected100.png",
-      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131602.422DriftCorrected101.png",
-      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131604.508DriftCorrected102.png",
-      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131606.466DriftCorrected103.png",
-      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131608.481DriftCorrected104.png",
-      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131610.564DriftCorrected105.png",
-      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131612.621DriftCorrected106.png",
-      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131614.559DriftCorrected107.png",
-      "Pics/AxonTraining/DriftCorrected/STEM Drift Corrected/20210412T131616.544DriftCorrected108.png"
-        ];
-%  fnames = [ "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_99.tif",
-%        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_96.tif",
-%        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_97.tif",
-%        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_98.tif",
-%        "Pics/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_100.tif" ];
+    "Pics/TEM_Pt_94kx_Conical_20um/96.tif",
+    "Pics/TEM_Pt_94kx_Conical_20um/97.tif",
+    "Pics/TEM_Pt_94kx_Conical_20um/98.tif",
+    "Pics/TEM_Pt_94kx_Conical_20um/99.tif",
+    "Pics/TEM_Pt_94kx_Conical_20um/100.tif",
+  ];
+
   NUM_IMAGES = length(fnames);
   SCALE_IMG = 1;
+%  SCALE_IMG = 700/4096;
   imgs = [];
 
   if(contains(fnames(1), ".tif"))
@@ -58,7 +73,9 @@ function nchannel_adaptive(varargin)
   displayImages = false;
   fuseImages = true;
   pgen_fname = "pgen-700x700";
-  pgen_on = false;
+  pgen_fname_out = "pgen-STEM170-110kx-fullsize";
+  %pgen_fname_out = "pgen";
+  pgen_on = true;
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %Calculate q
@@ -154,6 +171,7 @@ function nchannel_adaptive(varargin)
     tensor = zeros(M + 2, N + 2);
 
     for i = 1:NUM_IMAGES
+      %tensor(:,:) = tensor + find_grad(imgs_s(:,:,i)).^2;
       img_b = zeros(M+2, N+2);
       img_b(2:M+1, 2:N+1) = imgs_s(:,:,i);
       gradq1 = zeros(M+2,N+2,2);
@@ -165,10 +183,16 @@ function nchannel_adaptive(varargin)
       tensor(:,:) = tensor + (sqrt(gradq1(:,:,1).^2+gradq1(:,:,2).^2)).^2;
     end
 
+    save(pgen_fname_out, 'tensor');
+
   else
     pgen = load(pgen_fname);
     tensor = pgen.tensor;
+    [M, N] = size(tensor);
   end
+
+%  tensor = imresize(tensor, [700, 700]);
+%  [M, N] = size(tensor);
 
   imwrite(uint8(tensor * 255/max(max(tensor))), dir_name + "1_first_order.png");
   tensor = exp(-0.1667 * sqrt(tensor));
@@ -194,12 +218,18 @@ function nchannel_adaptive(varargin)
   % Call algorithm to retrieve skeleton
   tic
   skeleton = edgeProcessing(edges);
+  %skeleton = edgeProcessing(imresize(edges, [700, 700]));
   toc
 
   imwrite(skeleton, dir_name + 'skel_out.png');
 
   if (fuseImages & ~pgen_on)
       J = imresize(skeleton, size(imgs(:,:,1), 1)/size(skeleton,1));
+      C = imfuse(imgs(:,:,1), uint8(J));
+      imwrite(rgb2gray(C), dir_name + 'skel_out_overlay.png');
+  elseif (fuseImages & pgen_on)
+      img = imread(fnames(1));
+      J = imresize(skeleton, size(img, 1)/size(skeleton,1));
       C = imfuse(imgs(:,:,1), uint8(J));
       imwrite(rgb2gray(C), dir_name + 'skel_out_overlay.png');
   end

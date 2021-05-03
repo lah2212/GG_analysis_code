@@ -70,6 +70,17 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) {
   double *detangledImage = m->detangle(m->detangle(thinnedImage, width, height), width, height);
   delete[] thinnedImage;
 
+  /* Temporary */
+  double *outImage = normalizeRepresentationOut(detangledImage, width, height);
+  plhs[0] = mxCreateDoubleMatrix(height, width, mxREAL);
+  double *out = mxGetPr(plhs[0]);
+
+  for(int i=0; i<width*height; i++)
+    out[i] = outImage[i];
+
+  delete[] outImage;
+
+/*
   tifio.write("Pics/c_5_detangled.tif", detangledImage, true);
   Interpolation *interp = new Interpolation();
   printf("Interpolating Image...\n");
@@ -107,4 +118,5 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) {
     out[i] = outImage[i];
 
   delete[] outImage;
+*/
 }
