@@ -316,20 +316,20 @@ class NonlinearIso{
         QTiffIO tensor_tif;
         tensor_tif.set_dimension(width, height);
 
-        tensor_tif.write("Pics/tensor1.tif", tensor, true);
+        tensor_tif.write("Pics/Process/tensor1.tif", tensor, true);
         
         for(int i=0; i<width*height; i++)
           tensor[i] = exp(-k*sqrt(tensor[i]));
 
-        tensor_tif.write("Pics/tensor2.tif", tensor, true);
+        tensor_tif.write("Pics/Process/tensor2.tif", tensor, true);
         
         tensor = medFilter(tensor, width, height, true);
 
-        tensor_tif.write("Pics/tensor3.tif", tensor, true);
+        tensor_tif.write("Pics/Process/tensor3.tif", tensor, true);
         
         tensor = lapFilter(tensor, width, height, true);
 
-        tensor_tif.write("Pics/tensor4.tif", tensor, true);
+        tensor_tif.write("Pics/Process/tensor4.tif", tensor, true);
 
         double *tmp = new double[width*height];
         for(int i=0; i<width*height; i++)
@@ -338,7 +338,7 @@ class NonlinearIso{
         for(int i=0; i<width*height; i++)
           tensor[i] = exp(-10*tmpMed[i]);
 
-        tensor_tif.write("Pics/tensor5.tif", tensor, true);
+        tensor_tif.write("Pics/Process/tensor5.tif", tensor, true);
 
         delete[] tmp;
         delete[] tmpMed;
@@ -371,12 +371,12 @@ class NonlinearIso{
           aosiso(images[k], diffTens, dt, width, height, diffImages[k]);
 
           smoothed_tif.set_dimension(width, height);
-          char smoothed_fname[20] = "smoothed_img_yx.tif";
-          smoothed_fname[13] = '0' + t;
-          smoothed_fname[14] = '0' + k;
+          char smoothed_fname[40] = "Pics/Process/smoothed_img_yx.tif";
+          smoothed_fname[26] = '0' + t;
+          smoothed_fname[27] = '0' + k;
           smoothed_tif.write(smoothed_fname, diffImages[k], true);
         }
-        sprintf(buffer, "Pics/difftens_iter_%d.tif", t);
+        sprintf(buffer, "Pics/Process/difftens_iter_%d.tif", t);
         delete[] diffTens;
       }
 

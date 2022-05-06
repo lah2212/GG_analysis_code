@@ -1,7 +1,8 @@
 /*  This is just a little program for importing and exporting tif files.
- *  Designed to only work with the PT_Conical images downsized to 16 bit.
+ *  Designed to only work with 16 bit 2D tifs. 
+ *  8 bit 2d tifs also work, it'll just upscale them to 16 bit.
  *
- *  Author:  Jamie Eckstein (), jamie.k.eckstein@gmail.com
+ *  Author:  Jamie Eckstein (jamie.k.eckstein@gmail.com)
  */
 
 #include <iostream>
@@ -45,9 +46,14 @@ class QTiffIO {
         TIFFGetField(tif, TIFFTAG_PLANARCONFIG, &config);
         TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, &nsamples);
         TIFFGetField(tif, TIFFTAG_BITSPERSAMPLE, &nbits);
+        if (nsamples > 1)
+          std::printf("Warning: More than 1 samples per pixel detected, this function is only designed to be used with 2D images\n");
+
         if (verbose) {
           std::printf("Opening Tiff File...\n");
           std::printf("Samples: %d\n", nsamples);
+          std::printf("Bits per sample: %d\n", nbits);
+          std::printf("Planar Configuration: %d\n", config);
           std::printf("Image (width, height): (%d, %d)\n", width, height);
         }
 
@@ -106,7 +112,7 @@ class QTiffIO {
       height_out = height;
     }
 
-    void write(const char *path, double *image, bool normalize) {
+    void write(const char *path, double *image, bool normalize, bool verbose=true) {
       uint16 *image_out = new uint16[width_out * height_out];
 
       if (normalize) {
@@ -142,12 +148,13 @@ class QTiffIO {
         }
       }
 
-      write(path, image_out);
+      write(path, image_out, verbose);
       delete[] image_out;
     }
 
-    void write(const char *path, uint16 *image_out) {
-      std::printf("Writing image...\n");
+    void write(const char *path, uint16 *image_out, bool verbose=false) {
+      if (verbose)
+        std::printf("Writing image...%s\n", path);
       TIFF *out = TIFFOpen(path, "w");
       if (out) {
         TIFFSetField(out, TIFFTAG_IMAGEWIDTH, width_out);  // set the width of the image
@@ -179,7 +186,8 @@ class QTiffIO {
             break;
         }
 
-        std::printf("Image Closed...\n");
+        if (verbose)
+          std::printf("Image Closed...\n\n");
         (void) TIFFClose(out);
         _TIFFfree(buf);
       }

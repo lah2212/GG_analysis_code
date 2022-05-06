@@ -453,19 +453,13 @@ class Morphology{
       for (int j = 0; j < height; j++){
         if (denoisedImage[j * width + i] == 0 && image[j * width + i] != 0) {
           int i1, j1;
-//          Point p = {i, j};
           nextPoints.push(Point{i, j});
           do {
             Point tmp = (Point) nextPoints.front();
             nextPoints.pop();
             i1 = tmp.x;
             j1 = tmp.y;
-//            Point *tmp = (Point *)nextPoints.front();
-//            nextPoints.pop();
-//            i1 = tmp->x;
-//            j1 = tmp->y;
             if (region.size() < threshold) {
-//              Point tmpr = {i1, j1};
               region.push_back(Point{i1, j1});
             }
             else if (region.size() == threshold) {

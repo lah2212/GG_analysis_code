@@ -97,17 +97,15 @@ double *resize(double *image, int width, int height, double scale) {
 //void mexFunction(int nlhs, mxArray* plhs[], int nrhs, mxArray* prhs[])
 double *algorithm(int numImages, double **images, int width, int height, double scale) { 
   vector<double *> imageSet;
-//  double scale = ;
-//  double scale = 700/sqrt((double)width*height);
   printf("Scale: %f \t Width: %d \t Height: %d\n", scale, int(scale*width), int(scale*height));
-//  imageSet.push_back(resize(image, width, height, scale));
+
   for(int i=0; i<numImages; i++){
-//    double *in = normalizeRepresentationIn(images, width, height);
     imageSet.push_back(resize(images[i], width, height, scale));
+//    double *in = normalizeRepresentationIn(images, width, height);
 //    delete[] in;
   }
 
-  int iterations = 5;
+  int iterations = 1;
   width = roundd(width*scale);
   height = roundd(height*scale);
   printf("Beginning to smooth...\n");
@@ -129,41 +127,48 @@ double *algorithm(int numImages, double **images, int width, int height, double 
 
   QTiffIO tifio;
   tifio.set_dimension(width, height);
-  tifio.write("edges_tmp.tif", tmp, true);
+  tifio.write("Pics/Process/0_edges_tmp.tif", tmp, true);
 
   Morphology *m = new Morphology();
   double *thresholdedImage = m->doubleThreshold(tmp, tps->lowThreshold(), tps->highThreshold(), width, height);
   delete tps;
   delete[] tmp;
 
-  tifio.write("double_threshold.tif", thresholdedImage, true);
+  tifio.write("Pics/Process/1_double_threshold.tif", thresholdedImage, true);
 
   int firstDenoiseThresh = roundd(width*height/5000);
 //  printf("Binary Denoising Image...\n");
   double *denoisedImage = m->binaryDenoise(thresholdedImage, width, height, firstDenoiseThresh, 2);
   delete[] thresholdedImage;
 
-  tifio.write("binary_denoise.tif", denoisedImage, true);
+  tifio.write("Pics/Process/2_binary_denoise.tif", denoisedImage, true);
 
-//  exit(0);
   printf("Dilating Image...\n");
   double *dilatedImage = m->dilate(denoisedImage, width, height);
   delete[] denoisedImage;
+
+  tifio.write("Pics/Process/3_dilated.tif", dilatedImage, true);
+
   printf("Thinning Image...\n");
   double *thinnedImage = m->thin(dilatedImage, width, height);
   delete[] dilatedImage;
-//  printf("Detangling Image...\n");
+  tifio.write("Pics/Process/4_thinned.tif", thinnedImage, true);
+
   double *detangledImage = m->detangle(m->detangle(thinnedImage, width, height), width, height);
   delete[] thinnedImage;
+  tifio.write("Pics/Process/5_detangled.tif", detangledImage, true);
 
   Interpolation *interp = new Interpolation();
   printf("Interpolating Image...\n");
   double *interpolatedImage = interp->interpolate(detangledImage, width, height);
   delete[] detangledImage;
+  tifio.write("Pics/Process/6_interpolated.tif", interpolatedImage, true);
+
   int pruneThreshold = roundd(sqrt((double)(width*height))/50.0);
-//  printf("Pruning Image...\n");
   double *skeleton = m->prune(interpolatedImage, pruneThreshold, width, height);
   delete[] interpolatedImage;
+  tifio.write("Pics/Process/7_pruned.tif", skeleton, true);
+
   int finalDenoiseThresh = roundd(sqrt((double)width*height)/50.0);
   printf("Skeletonizing Image...\n");
 //  double *skeleton = prunedImage;
@@ -176,7 +181,6 @@ double *algorithm(int numImages, double **images, int width, int height, double 
   }
   printf("Normalizing Image...\n");
   //double *outImage = normalizeRepresentationOut(skeleton, width, height);
-//  delete[] skeleton;
   delete interp;
   delete m;
 

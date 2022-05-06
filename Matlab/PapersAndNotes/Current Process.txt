@@ -1,0 +1,66 @@
+
+The current process - to my understanding - is as follows:
+
+
+ - fill out the name fields for the set of images so that the tester file knows what to use
+ - tester file uses the name fields to create the names for the final images
+ - tester reads the tif files, and loads them into an array of files of type 'double'
+	- (the exact datatype is the result of the operation double(read(Tiff(filename.tif,'r')))
+ 
+ - the files are fed into the mainMatlab.cpp mex code
+ - this code declares the functions that normalize the images and resize them
+ - it declares the mexFunction function, which sets up the parameters for the following operations (it sets the scale for resizing, the width and height for every image operation, etc.).
+ - if you want to change the scale, this is where you would do it, etc.
+
+ - the code resizes and prepares the set of images for edge-detection
+ - the code then runs a series of operations as declared in the header files
+
+
+ - the Smoothing header has the operations: 
+	- dx,dy,dxx, and dyy
+		- these are the pixel-point operations that the diffusion process is built on, I believe
+
+	- diffuse
+		- iterates through all data in all images, taking the dxx and dyy, presumably the second derivatives in two orthogonal directions, and fills an image with these values 
+		- this outputs the diffused image, which is used for the filtering process
+
+	- transpose
+		- shifts each value, I do not know what for
+
+	- thomas 
+		- I do not know what this does
+
+	- aosiso
+		- I do not know what this does
+
+	- lapFilter
+		- this seems to be a standard Laplacian Filter Kernel
+	- medFilter 
+		- this seems to be a standard Median Filter Kernel - equal weighting for all surrounding datapoints
+	- filter2
+		- is the code that uses the filter parameters of lapFilter or medFilter to create a filtered image from an input image.
+		- it takes in an image and a filter kernel and iterates through all points in the image
+ 
+	- diffusionTensor
+		- creates an empty tensor in the shape of the image
+		- creates an empty median-filtered image in the shape of the image
+		- runs median filter on all the images to fill the median-filtered image
+		- then filters again, and filters using the Laplacian filter
+
+ - the smoothing code outputs the diffusionTensor, which appears to be a set of gradients which are indicative of edges.  These edge images are thresholded and processed into the skeletal edge boundary maps we are familar with at the final stage of analysis.
+
+
+ - the Morphology header has many operations, such as pruning, but for the steps we are looking into there are these:
+	
+	- dilate
+	- binaryDenoise
+	- thin
+
+
+ - the test file then switches directories (cd) to the Skeletons folder, where it saves the skeletons and overlaid image
+
+Questions about code: 
+
+I don't full understand why some calls use pointers and some use the function itself.
+
+For imdiffusefilt, the input needs to be an image stack.  This shouldn't be hard to do, but I am not familiar enough with the TIF image format or with the different types of matlab data structures to confidently turn our images into a stack.  Do you know of a best process?

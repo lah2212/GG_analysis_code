@@ -1,8 +1,6 @@
-/*
- *       Filename:  main.cpp
- *    Description:  Just the file that handles all the image I/O
- *        Version:  1.0
- *         Author:  Jamie Eckstein (), jamie.k.eckstein@gmail.com
+/*  Feeds n-channel image stack into mainMatlab.cpp algorithm
+ *
+ *  Author:  Jamie Eckstein (), jamie.k.eckstein@gmail.com
  */
 #include <stdlib.h>
 #include <iostream>
@@ -11,10 +9,10 @@
 #include "mainMatlab.cpp"
 
 int main(int argc, char **argv) {
-  const int NUM_IMAGES = 5;
+  const int NUM_IMAGES = 3;
 //  const double SCALE = 700.0/2048.0;
-  const double SCALE = 1;
-//  const double SCALE = 700/sqrt(4096.0 * 4096.0);
+//  const double SCALE = 1;
+  const double SCALE = 700/sqrt(4012.0 * 4012.0);
   
   double *image_stack[NUM_IMAGES];
   QTiffIO tifio;
@@ -22,12 +20,22 @@ int main(int argc, char **argv) {
 
 //  char* fnames[1] = { "Pics/STEM/Pt170_STEM_225kX_C2(100)_CL205mm_06.tif" };
 
-  char* fnames[5] = {
-        "Pics/TEM/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_96_16bit.tif",
-        "Pics/TEM/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_97_16bit.tif",
-        "Pics/TEM/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_98_16bit.tif",
-        "Pics/TEM/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_99_16bit.tif",
-        "Pics/TEM/Pt_94kx_Conical 5sec_1fs_20umObj_5frames_02_1.ser_100_16bit.tif"};
+  /*
+  char* fnames[4] = {
+        "Pics/1hr2741_1.tif",
+        "Pics/1hr2741_2.tif",
+        "Pics/1hr2741_3.tif",
+        "Pics/1hr2741_4.tif"};
+  char *fnames[4] = {
+        "Pics/1hr2789_1.tif",
+        "Pics/1hr2789_2.tif",
+        "Pics/1hr2789_3.tif",
+        "Pics/1hr2789_4.tif"};
+  */
+  char *fnames[3] = {
+        "Pics/2hr2347_1.tif",
+        "Pics/2hr2348_2.tif",
+        "Pics/2hr2349_3.tif"};
 
   for(int i = 0; i < NUM_IMAGES; i++) {
     std::printf("Opening %s\n", fnames[i]);
@@ -66,7 +74,7 @@ int main(int argc, char **argv) {
   int height_out = SCALE * height;
 
   tifio.set_dimension(width_out, height_out);
-  tifio.write("finalskel.tif", image_processed, true);
+  tifio.write("Pics/finalskel.tif", image_processed, true);
 
   return 0;
 }
